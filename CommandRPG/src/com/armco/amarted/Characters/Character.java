@@ -1,35 +1,54 @@
 package com.armco.amarted.Characters;
 
 import com.armco.amarted.Dice.Dice;
-import com.armco.amarted.Gear.Weapon;
+import com.armco.amarted.Gear.Armor;
+import com.armco.amarted.Gear.Weapons;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
+import java.util.ArrayList;
+
 
 public class Character {
     private String name;
     private int ac;
+    private int toHit;
     private int maxHP;
     private int currentHP;
     private int initiative;
-    private Weapon weapon;
-    private int toHit;
+    private Weapons activeWeapon;
+    private Armor activeArmor;
+    private ArrayList<Weapons> inventoryWeapons;
+    private ArrayList<Armor> inventoryArmor;
 
-    Dice D20 = new Dice("D20",20);
-    Dice D8 = new Dice("D8",8);
 
-    public Character(String name, int ac, int maxHP, int initiative, Weapon weapon) {
+    public Character(String name, int ac, int maxHP, int initiative, Weapons initialWeapon, Armor initialArmor) {
         this.name = name;
         this.ac = ac;
         this.maxHP = maxHP;
         this.currentHP = maxHP;
         this.initiative = initiative;
-        this.weapon = weapon;
+        this.activeWeapon = initialWeapon;
+        this.inventoryWeapons = new ArrayList<>();
+        this.inventoryWeapons.add(initialWeapon);
+        this.activeArmor = initialArmor;
+        this.inventoryArmor = new ArrayList<>();
+        this.inventoryArmor.add(initialArmor);
+
     }
+
+
+
+    private int damage(int attackRoll, Weapons attacker, Armor defender){
+        int damageDealt = 0;
+        //ToDo: add weaponDamage(weapon) && armorDefense(armor)
+        return damageDealt;
+    }
+
+
 
     public void attack(Character enemy){
         int damage = 0;
         System.out.println("...see if you hit...");
-        int attackRoll = Dice.rollDice(D20);
+        int attackRoll = Dice.rollDice(20);
         if(attackRoll == 20){
             System.out.println("YOU ROLLED A CRITICAL HIT!!!");
             damage *= 2;
@@ -37,11 +56,11 @@ public class Character {
             System.out.println("YOU CRITICALLY MISSED!!!");
             damage /= 2;
         }
-        this.toHit = this.weapon.getAtkBonus() + attackRoll;
+        this.toHit = this.activeWeapon.getAtkBonus() + attackRoll;
         if(this.toHit > enemy.ac){
-            System.out.println("...attacking with your " + this.getWeapon().getName() +
-                    " (" + this.getWeapon().getNumDice() + this.getWeapon().getDiceType().getName() + "+" + this.getWeapon().getDmgBonus() + ")...");
-            damage = (weapon.getNumDice() * Dice.rollDice(this.weapon.getDiceType())) + this.weapon.getDmgBonus();
+            System.out.println("...attacking with your " + this.getActiveWeapon().getName() +
+                    " (" + this.getActiveWeapon().getNumDice() + "D" + this.getActiveWeapon().getDiceType() + "+" + this.getActiveWeapon().getDmgBonus() + ")...");
+            damage = (activeWeapon.getNumDice() * Dice.rollDice(this.activeWeapon.getDiceType())) + this.activeWeapon.getDmgBonus();
 
 
             System.out.println("You hit, causing " + damage + " damage!");
@@ -56,6 +75,28 @@ public class Character {
             System.out.println("Enemies remaining health: " + enemy.getCurrentHP() + "/" + enemy.getMaxHP());
         }
     }
+
+
+
+    public void takeDamage(int damage){
+        this.currentHP -= damage;
+        System.out.println("..." + " takes " + damage + "...");
+        if(currentHP <= 0) {
+            System.out.println(this.getName() + " HAS DIED!");
+            //ToDo: remove from active battle array(s)
+        }
+    }
+
+    public void takeDamage(int damage, String message){
+        this.currentHP -= damage;
+        System.out.println(message);
+        if(currentHP <= 0) {
+            System.out.println(this.getName() + " HAS DIED!");
+            //ToDo: remove from active battle array(s)
+        }
+    }
+
+
 
 
 
@@ -81,11 +122,25 @@ public class Character {
         return initiative;
     }
 
-    public Weapon getWeapon() {
-        return weapon;
+    public Weapons getActiveWeapon() {
+        return activeWeapon;
+    }
+
+    public Armor getActiveArmor() {
+        return activeArmor;
+    }
+
+    public ArrayList<Weapons> getInventoryWeapons() {
+        return inventoryWeapons;
+    }
+
+    public ArrayList<Armor> getInventoryArmor() {
+        return inventoryArmor;
     }
 
     public void setCurrentHP(int currentHP) {
         this.currentHP = currentHP;
     }
+
+
 }

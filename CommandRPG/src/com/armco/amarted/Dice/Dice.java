@@ -12,25 +12,20 @@ public class Dice {
     }
 
     public static void generateDice() {
-        System.out.println("Generating Dice...");
-        Dice D20 = new Dice("D20",20);
+        System.out.println("...Creating Dice...");
+        Dice D20 = new Dice("D20a",20);
         Dice D12 = new Dice("D12",12);
+        Dice D10 = new Dice("D10",10);
         Dice D8 = new Dice("D8",8);
         Dice D6 = new Dice("D6",6);
         Dice D4 = new Dice("D4",4);
+        Dice D100 = new Dice("D100",100);
     }
 
-    public static int rollDice(Dice di){
-        int maxValue = di.sides-1;
-        int rolledValue = (int)(Math.round(Math.random() * maxValue)+1);
-        if (rolledValue == di.sides){
-            System.out.println("YOU ROLLED MAX VALUE!!! (" + rolledValue + ")");
-        } else if (rolledValue == 1) {
-            System.out.println("YOU ROLLED THE LOWEST POSSIBLE!!! (" + rolledValue + ")");
-        } else {
-            System.out.println("You rolled " + rolledValue);
-        }
-        return rolledValue;
+    public static int rollDice(int di){
+//        int maxValue = di-1;
+//        int rolledValue = (int)(Math.round(Math.random() * maxValue)+1);
+        return (int)(Math.floor(Math.random()*di)+1);
     }
 
 
