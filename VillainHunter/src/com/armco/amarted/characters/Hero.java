@@ -3,10 +3,8 @@ package com.armco.amarted.characters;
 import com.armco.amarted.inventory.Armor;
 import com.armco.amarted.inventory.Spell;
 import com.armco.amarted.inventory.Weapon;
-
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Scanner;
 
 
@@ -14,64 +12,15 @@ public class Hero {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        LinkedList<Weapon> allWeapons = new LinkedList<>();
-        allWeapons.add(new Weapon("Bare Fists",3,1,4,1,"Bludgeoning"));
-        allWeapons.add(new Weapon("Staff",9,1,8,4,"Piercing"));
-        allWeapons.add(new Weapon("Sword",9,1,8,4,"Piercing"));
-        allWeapons.add(new Weapon("Dual Daggers",9,1,8,4,"Piercing"));
-        allWeapons.add(new Weapon("Longbow",9,1,8,4,"Piercing"));
-
-        LinkedList<Armor> allArmor = new LinkedList<>();
-        allArmor.add(new Armor("Naked",8,0));
-        allArmor.add(new Armor("Leather Jacket",14,1));
-        allArmor.add(new Armor("Chain Shirt",16,2));
-        allArmor.add(new Armor("Heavy Armor",18,2));
-
-        LinkedList<Spell> allSpells = new LinkedList<>();
-        //   ToDo: add Cure All if a mage
-        allSpells.add(new Spell("Cure",false,false,10,0));
-        allSpells.add(new Spell("Fire",true,false,15,1));
-        allSpells.add(new Spell("Blizzard",true,false,15,2));
-        allSpells.add(new Spell("Bolt",true,false,15,3));
-        allSpells.add(new Spell("Tornado",true,false,15,4));
-
-        LinkedList<Spell> knownSpells = new LinkedList<>();
-
-
-//        Weapon firstWeapon = new Weapon("Longbow",9,1,8,4,"Piercing");
-//        Weapon fists = new Weapon("Bare Fists",3,1,4,1,"Bludgeoning");
-//        Armor firstArmor = new Armor("Chain Shirt",16,2);
-//        Armor naked = new Armor("Naked",8,0);
-        // ToDo: create hero
-        // ToDo: enter your name
-        // ToDO: select your race
-        String race = "Human";
-        // ToDo: select your profession
-        Weapon firstWeapon = selectWeapon(allWeapons);
-        Armor firstArmor = selectArmor(allArmor);
-        Spell startingSpells = startingSpells(race, allSpells);
-        Hero hero = new Hero("Andreas",race,"Ranger",firstWeapon,firstArmor);
-//        hero.invWeapons.add(firstWeapon);
-        Hero hero1 = new Hero();
-        hero1.selectWeapon(allWeapons);
-//        Hero hero1 = new Hero("Volkan","Dragonborn","Monk",fists,naked);
-//        selectWeapon(hero.invWeapons);
-
-
+        createHero();
     }
-
-
-
-
-
 
 
 
     // Beginning of Hero class
     private String name;  // -UI
-    private String race;  // -UI
-    private String profession;  // -UI
+    private Race race;  // -UI
+    private Profession profession;  // -UI
     private int ac;  // -armor
     private int maxHP;  // -race
     private int currentHP;  // -race
@@ -81,16 +30,17 @@ public class Hero {
     private LinkedList<Weapon> invWeapons;  // -NEW
     private LinkedList<Armor> invArmor;  // -NEW
     private LinkedList<Spell> knownSpells;  // -NEW
+    private LinkedList<Spell> availSpells;
 
-    public Hero(String name, String race, String profession, Weapon selectedWeapon, Armor selectedArmor) {
+    public Hero(String name, Race race, Profession selectedClass, Weapon selectedWeapon, Armor selectedArmor, LinkedList<Spell> knownSpells, LinkedList<Spell> availSpells) {
         this.name = name;
         this.race = race;
-        this.profession = profession;
+        this.profession = selectedClass;
         this.activeWeapon = selectedWeapon;
         this.activeArmor = selectedArmor;
         this.ac = calculateAC(selectedArmor);
-        this.initiative = calculateInitiative(race,selectedArmor);
-        int maxHP = calculateHP(race);
+        this.initiative = calculateInitiative();
+        int maxHP = calculateHP();
         this.maxHP = maxHP;
         this.currentHP = maxHP;
         this.invArmor = new LinkedList<>();
@@ -98,69 +48,89 @@ public class Hero {
         this.invWeapons = new LinkedList<>();
         invWeapons.add(selectedWeapon);
         //ToDo: change above to: invWeapons.add(addWeapon(selectedWeapon));
-        this.knownSpells = new LinkedList<>();
-        System.out.println("Successfully created " + this.name + "!!!");
-        System.out.println(this.race + " | " + this.profession);
-        System.out.println("AC:" + this.ac + " | HP:" + this.currentHP  + "/" + this.maxHP + " | Initiative:" + this.initiative);
-        System.out.println(this.activeWeapon.getName()  + " | " + this.activeArmor.getName());
+        this.knownSpells = knownSpells;
+        this.availSpells = availSpells;
+        System.out.println("Successfully created " + this.name.toUpperCase() + "!!!");
     }
 
-    public Hero(){
-
-    }
-
-    public Hero createHero() {
-        String name;
-        String race;
-        String profession;
-
-
-
+    public static Hero createHero(){
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nTime to create your adventurer...");
-        System.out.println("Enter your hero's name:");
-        name = scanner.nextLine();
-        // todo: select race
-        // todo: select profession;
+        // Inflate Races, Professions, Weapons, Armor, Spells
+        LinkedList<Race> allRaces = Race.inflateRaces();
+        LinkedList<Profession> allProfessions = Profession.inflateProfessions();
+        LinkedList<Weapon> startingWeapons = Weapon.inflateWeapons();
+        // todo: implement equipWeapon() from invWeapons
+        LinkedList<Weapon> invWeapons = new LinkedList<>();
+        LinkedList<Armor> startingArmor = Armor.inflateArmor();
+        // todo: implement equipArmor() from invArmor
+        LinkedList<Armor> invArmor = new LinkedList<>();
+        LinkedList<Spell> allSpells = Spell.inflateSpells();
+        LinkedList<Spell> availableSpells = new LinkedList<>(allSpells);
+        LinkedList<Spell> knownSpells = new LinkedList<>();
 
-        Hero newHero = new Hero();
-        return newHero;
+
+        // CREATE YOUR HERO
+        System.out.println("\nEnter your character's name: ");
+        String newName = scanner.nextLine();
+        Race newRace = selectRace(allRaces);
+        Profession newProfession = selectProfession(allProfessions);
+        if(newProfession.getName().equals("Mage")){
+            availableSpells.add(0,new Spell("Cure All",false,false,5,0));
+            availableSpells.add(availableSpells.size(),new Spell("Berserker",true,true,5,0));
+        }
+        Weapon newWeapon = selectWeapon(startingWeapons);
+        invWeapons.add(newWeapon);
+        Armor newArmor = selectArmor(startingArmor);
+        invArmor.add(newArmor);
+        Spell newSpell = selectSpell(availableSpells);
+        knownSpells.add(newSpell);
+        availableSpells.remove(newSpell);
+        if(newProfession.getName().equals("Mage")){
+            System.out.println("\n- Because you're a Mage, you've earned another spell slot -");
+            newSpell = selectSpell(availableSpells);
+            knownSpells.add(newSpell);
+            availableSpells.remove(newSpell);
+        }
+        if(newWeapon.getName().equals("Staff")){
+            System.out.println("\n- Because you're using a staff, you gain another spell slot -");
+            newSpell = selectSpell(availableSpells);
+            knownSpells.add(newSpell);
+            availableSpells.remove(newSpell);
+        }
+
+        Hero hero = new Hero(newName,newRace,newProfession,newWeapon,newArmor,knownSpells,availableSpells);
+        hero.printBio();
+        return hero;
     }
-    //          --------------------------------------
 
+    public void printBio(){
+        System.out.println("\n=====PRINTING INFO=====");
+        System.out.println("\t\t" + this.name);
+        System.out.println("\t" + this.race.getName() + "\t" +  this.profession.getName());
+        System.out.println("AC: " + this.ac + " | HP: " + this.currentHP  + "/" + this.maxHP + " | Ini: " + this.initiative);
+        System.out.println("\t" + this.activeWeapon.getName()  + "\t" + this.activeArmor.getName());
+        System.out.println("Spells Known:");
+        if(this.knownSpells.size()<=0){
+            System.out.println("\tNONE");
+        } else{
+            for (int i = 0; i < this.knownSpells.size(); i++) {
+                System.out.println("\t" + (i+1) + ". " + this.knownSpells.get(i).getName());
+            }
+        }
+    }
 
-//    public static boolean addSpell (LinkedList<Spell> knownSpells, Spell newSpell){
-//        ListIterator<Spell> spellListIterator = knownSpells.listIterator();
-//        while (spellListIterator.hasNext()){
-//            String comp = spellListIterator.next().getName();
-//        }
-//    }
-
-
-
-
-
-
-
-//    public ArrayList<Weapon> startingWeapons()    {
-//        ArrayList<Weapon> startingWeapons = new ArrayList<Weapon>();
-//        startingWeapons.add(new Weapon("Bare Fists",3,1,4,1,"Bludgeoning"));
-//        startingWeapons.add(new Weapon("Dualing Shortswords",7,1,6,4,"Piercing"));
-//        startingWeapons.add(new Weapon("Long Sword",5,1,8,6,"Slashing"));
-//        startingWeapons.add(addWeapon("Longbow",9,1,8,4,"Piercing"));
-//        return(startingWeapons);
-//    }
-
-
-    public static Spell startingSpells(String race, LinkedList<Spell> linkedList){
+    private static Race selectRace(LinkedList<Race> linkedList){
         Scanner scanner = new Scanner(System.in);
-        int j = 0;
         boolean done = false;
-        Spell selected = null;
-        Iterator<Spell> i = linkedList.iterator();
-        System.out.println("\n - Select your armor -");
+        Race selected = null;
+
+        //pick <=0 -> show options
+        //pick >0 -> select option
 
         while(!done){
+            int j =0;
+            System.out.println("\n - Select your race -");
+            Iterator<Race> i = linkedList.iterator();
             while (i.hasNext()) {
                 j++;
                 System.out.println(j + ". " + i.next().getName());
@@ -168,7 +138,7 @@ public class Hero {
             System.out.print("--> ");
             int pick = scanner.nextInt();
             scanner.nextLine();
-            if(pick > linkedList.size() || pick < 0) {
+            if(pick > linkedList.size() || pick <= 0) {
                 System.out.println("You picked incorrect option");
             } else {
                 selected = linkedList.get(pick-1);
@@ -178,18 +148,39 @@ public class Hero {
         return selected;
     }
 
-
-
-
-    public static Weapon selectWeapon(LinkedList<Weapon> linkedList){
+    private static Profession selectProfession(LinkedList<Profession> linkedList){
         Scanner scanner = new Scanner(System.in);
-        int j = 0;
+        boolean done = false;
+        Profession selected = null;
+        while(!done){
+            int j =0;
+            System.out.println("\n - Select your race -");
+            Iterator<Profession> i = linkedList.iterator();
+            while (i.hasNext()) {
+                j++;
+                System.out.println(j + ". " + i.next().getName());
+            }
+            System.out.print("--> ");
+            int pick = scanner.nextInt();
+            scanner.nextLine();
+            if(pick > linkedList.size() || pick <= 0) {
+                System.out.println("You picked incorrect option");
+            } else {
+                selected = linkedList.get(pick-1);
+                done = true;
+            }
+        }
+        return selected;
+    }
+
+    private static Weapon selectWeapon(LinkedList<Weapon> linkedList){
+        Scanner scanner = new Scanner(System.in);
         boolean done = false;
         Weapon selected = null;
-        Iterator<Weapon> i = linkedList.iterator();
-        System.out.println("\n - Select your weapon -");
-
         while(!done){
+            int j =0;
+            System.out.println("\n - Select your race -");
+            Iterator<Weapon> i = linkedList.iterator();
             while (i.hasNext()) {
                 j++;
                 System.out.println(j + ". " + i.next().getName());
@@ -197,7 +188,7 @@ public class Hero {
             System.out.print("--> ");
             int pick = scanner.nextInt();
             scanner.nextLine();
-            if(pick > linkedList.size() || pick < 0) {
+            if(pick > linkedList.size() || pick <= 0) {
                 System.out.println("You picked incorrect option");
             } else {
                 selected = linkedList.get(pick-1);
@@ -207,15 +198,14 @@ public class Hero {
         return selected;
     }
 
-    public static Armor selectArmor(LinkedList<Armor> linkedList){
+    private static Armor selectArmor(LinkedList<Armor> linkedList){
         Scanner scanner = new Scanner(System.in);
-        int j = 0;
         boolean done = false;
         Armor selected = null;
-        Iterator<Armor> i = linkedList.iterator();
-        System.out.println("\n - Select your armor -");
-
         while(!done){
+            int j =0;
+            System.out.println("\n - Select your race -");
+            Iterator<Armor> i = linkedList.iterator();
             while (i.hasNext()) {
                 j++;
                 System.out.println(j + ". " + i.next().getName());
@@ -223,7 +213,7 @@ public class Hero {
             System.out.print("--> ");
             int pick = scanner.nextInt();
             scanner.nextLine();
-            if(pick > linkedList.size() || pick < 0) {
+            if(pick > linkedList.size() || pick <= 0) {
                 System.out.println("You picked incorrect option");
             } else {
                 selected = linkedList.get(pick-1);
@@ -233,51 +223,42 @@ public class Hero {
         return selected;
     }
 
-
-
-    private int calculateAC(Armor armor){
-        return armor.getAc();
+    private static Spell selectSpell(LinkedList<Spell> linkedList){
+        Scanner scanner = new Scanner(System.in);
+        boolean done = false;
+        Spell selected = null;
+        while(!done){
+            int j =0;
+            System.out.println("\n - Select your race -");
+            Iterator<Spell> i = linkedList.iterator();
+            while (i.hasNext()) {
+                j++;
+                System.out.println(j + ". " + i.next().getName());
+            }
+            System.out.print("--> ");
+            int pick = scanner.nextInt();
+            scanner.nextLine();
+            if(pick > linkedList.size() || pick <= 0) {
+                System.out.println("You picked incorrect option");
+            } else {
+                selected = linkedList.get(pick-1);
+                done = true;
+            }
+        }
+        return selected;
     }
 
-
-    public int calculateHP(String race) {
-        int maxHP = 0;
-        if (race.equals("Dwarf")) {
-            maxHP = 25;
-        } else if (race.equals("Human")) {
-            maxHP = 30;
-        } else if (race.equals("Elf")) {
-            maxHP = 40;
-        } else if (race.equals("Dragonborn")) {
-            maxHP = 45;
-        } else {
-            System.out.println("Incorrect 'Race' Selected");
-            maxHP = -1;
-        }
-        return maxHP;
+    private int calculateAC(){
+        return this.activeArmor.getAc() + (this.race.getMaxHP() / 10);
     }
 
-    public int calculateInitiative(String race, Armor armor) {
-        int initiative = 0;
-        if (armor.getName().equals("Naked")) {
-            initiative += 1;
-        } else if (armor.getName().equals("Heavy Armor")) {
-            initiative -= 1;
-        }
+    private int calculateHP() {
+        return this.race.getMaxHP();
+    }
 
-        if (race.equals("Dwarf")) {
-            initiative += 3;
-        } else if (race.equals("Human")) {
-            initiative += 4;
-        } else if (race.equals("Elf")) {
-            initiative += 5;
-        } else if (race.equals("Dragonborn")) {
-            initiative += 2;
-        } else {
-            System.out.println("Incorrect 'Race' Selected");
-            initiative = -1;
-        }
-        return initiative;
+    private int calculateInitiative() {
+        return this.race.getInitiative() + this.activeArmor.getInitiative();
+
     }
 
 

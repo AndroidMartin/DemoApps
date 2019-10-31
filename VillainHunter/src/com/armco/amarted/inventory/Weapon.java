@@ -1,6 +1,7 @@
 package com.armco.amarted.inventory;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Weapon {
     private String name;
@@ -22,7 +23,15 @@ public class Weapon {
 
 
 
-
+    public static LinkedList<Weapon> inflateWeapons(){
+        LinkedList<Weapon> startingWeapons = new LinkedList<>();
+        startingWeapons.add(new Weapon("Bare Fists",3,1,4,1,"Bludgeoning"));
+        startingWeapons.add(new Weapon("Staff",9,1,8,4,"Piercing"));
+        startingWeapons.add(new Weapon("Sword",9,1,8,4,"Piercing"));
+        startingWeapons.add(new Weapon("Dual Daggers",9,1,8,4,"Piercing"));
+        startingWeapons.add(new Weapon("Longbow",9,1,8,4,"Piercing"));
+        return startingWeapons;
+    }
 
 
 
