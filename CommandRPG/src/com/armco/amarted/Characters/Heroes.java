@@ -1,26 +1,30 @@
 package com.armco.amarted.Characters;
 
+import com.armco.amarted.Actions.HeroActions;
 import com.armco.amarted.Dice.Dice;
 import com.armco.amarted.Gear.Armor;
 import com.armco.amarted.Gear.Weapons;
+import com.armco.amarted.Spells.Spells;
 
 import java.util.ArrayList;
 
 
-public class Character {
+public class Heroes extends HeroActions {
     private String name;
     private int ac;
-    private int toHit;
     private int maxHP;
     private int currentHP;
     private int initiative;
     private Weapons activeWeapon;
     private Armor activeArmor;
+    private Spells activeSpell;
     private ArrayList<Weapons> inventoryWeapons;
     private ArrayList<Armor> inventoryArmor;
+    private ArrayList<Spells> knownSpells;
 
 
-    public Character(String name, int ac, int maxHP, int initiative, Weapons initialWeapon, Armor initialArmor) {
+
+    public Heroes(String name, int ac, int maxHP, int initiative, Weapons initialWeapon, Armor initialArmor) {
         this.name = name;
         this.ac = ac;
         this.maxHP = maxHP;
@@ -32,49 +36,17 @@ public class Character {
         this.activeArmor = initialArmor;
         this.inventoryArmor = new ArrayList<>();
         this.inventoryArmor.add(initialArmor);
+        this.knownSpells = new ArrayList<>();
+
 
     }
 
 
 
-    private int damage(int attackRoll, Weapons attacker, Armor defender){
-        int damageDealt = 0;
-        //ToDo: add weaponDamage(weapon) && armorDefense(armor)
-        return damageDealt;
+    public void activateSpell(Spells spell){
+        this.activeSpell = spell;
     }
 
-
-
-    public void attack(Character enemy){
-        int damage = 0;
-        System.out.println("...see if you hit...");
-        int attackRoll = Dice.rollDice(20);
-        if(attackRoll == 20){
-            System.out.println("YOU ROLLED A CRITICAL HIT!!!");
-            damage *= 2;
-        } else if (attackRoll == 1) {
-            System.out.println("YOU CRITICALLY MISSED!!!");
-            damage /= 2;
-        }
-        this.toHit = this.activeWeapon.getAtkBonus() + attackRoll;
-        if(this.toHit > enemy.ac){
-            System.out.println("...attacking with your " + this.getActiveWeapon().getName() +
-                    " (" + this.getActiveWeapon().getNumDice() + "D" + this.getActiveWeapon().getDiceType() + "+" + this.getActiveWeapon().getDmgBonus() + ")...");
-            damage = (activeWeapon.getNumDice() * Dice.rollDice(this.activeWeapon.getDiceType())) + this.activeWeapon.getDmgBonus();
-
-
-            System.out.println("You hit, causing " + damage + " damage!");
-        } else {
-            System.out.println("Your attack misses.  :(");
-        }
-        enemy.setCurrentHP(enemy.getCurrentHP()-damage);
-
-        if(enemy.getCurrentHP() <= 0){
-            System.out.println("You defeated your foe!");
-        } else {
-            System.out.println("Enemies remaining health: " + enemy.getCurrentHP() + "/" + enemy.getMaxHP());
-        }
-    }
 
 
 
@@ -142,5 +114,11 @@ public class Character {
         this.currentHP = currentHP;
     }
 
+    public Spells getActiveSpell() {
+        return activeSpell;
+    }
 
+    public ArrayList<Spells> getKnownSpells() {
+        return knownSpells;
+    }
 }

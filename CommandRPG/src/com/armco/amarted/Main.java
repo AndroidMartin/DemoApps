@@ -1,9 +1,13 @@
 package com.armco.amarted;
 
-import com.armco.amarted.Characters.Character;
+import com.armco.amarted.Actions.Startup;
+import com.armco.amarted.Characters.Heroes;
 import com.armco.amarted.Gear.Armor;
+import com.armco.amarted.Gear.Weapons;
 import com.armco.amarted.Messages.Messages;
+import com.armco.amarted.Spells.Spells;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -17,14 +21,23 @@ public class Main {
         boolean confirmation = false;
 
         //Setup the Game - WORKING UNTIL ENEMY CREATION
-        Character hero = Messages.createHero();
+//        Startup initializeInventory = new Startup(new Armor())
+        Startup initializeInventory = new Startup(new ArrayList<Armor>(),new ArrayList<Weapons>(),new ArrayList<Spells>());
+        initializeInventory.startArmor();
+
+
+        Heroes hero = Messages.createHero();
         System.out.println("\n" + hero.getName() + " has an AC of " + hero.getAc() + ", with " + hero.getMaxHP() + " hit points, and an initiative of +" + hero.getInitiative());
         System.out.println("\nNow it's time to select who you're fighting...");
 //        Character enemy1 = new Character("BigBad",14,38,3,Messages.weaponSelection());
-        Character villain = Messages.createEnemy();
+        Heroes villain = Messages.createEnemy();
         System.out.println(villain.getName() + " has an AC of " + villain.getAc() + " and health of " +
                 villain.getCurrentHP() + "/" + villain.getMaxHP());
 
+        hero.attack(hero,villain,false);
+        villain.activateSpell(new Spells("Fire",8,false,4));
+        hero.addSpell(new Spells("Cure",12,true,0));
+//        hero.useMagic(hero.getKnownSpells().get());
 
 //        System.out.println("How many enemies would you like to fight?");
 //        choice = scanner.nextInt();

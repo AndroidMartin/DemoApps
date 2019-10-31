@@ -1,15 +1,15 @@
 package com.armco.amarted.Messages;
 
-import com.armco.amarted.Characters.Character;
+import com.armco.amarted.Characters.Heroes;
 import com.armco.amarted.Gear.Weapons;
 
 import java.util.Scanner;
 
 public class Messages {
 
-    public static Character createHero(){
+    public static Heroes createHero(){
         Scanner scanner = new Scanner(System.in);
-        Character hero = null;
+        Heroes hero = null;
         boolean isCorrect = false;
         while (!isCorrect) {
             System.out.println("Enter your character's name:");
@@ -18,12 +18,12 @@ public class Messages {
             System.out.println("Yes or No");
             String confirm = scanner.next();
             if (confirm.toLowerCase().contentEquals("y") || confirm.toLowerCase().contentEquals("yes")){
-                hero = new Character(name, 15, 58, 4, weaponSelection());
+                hero = new Heroes(name, 15, 58, 4, weaponSelection());
                 isCorrect = true;
             }
         }
 //        scanner.close();
-        System.out.println("You created " + hero.getName() + ", fighting with their " + hero.getActiveWeapon().getName() + "!");
+        System.out.println("You created " + hero.getName() + ", fighting with their " + hero.getGetActiveWeapon().getName() + "!");
         return hero;
     }
 
@@ -72,9 +72,9 @@ public class Messages {
         return mainWeapon;
     }
 
-    public static Character createEnemy(){
+    public static Heroes createEnemy(){
         Scanner scanner = new Scanner(System.in);
-        Character enemy = null;
+        Heroes enemy = null;
         boolean isCorrect = false;
         while (!isCorrect) {
             System.out.println("Enter your enemy's name:");
@@ -87,7 +87,7 @@ public class Messages {
                 int enemyAC = (int)(Math.random()*18);
                 int enemyHP = (int)(Math.random()*40);
                 int enemyIni = (int)(Math.random()*6);
-                enemy = new Character(name, enemyAC, enemyHP, enemyIni, weaponSelection());
+                enemy = new Heroes(name, enemyAC, enemyHP, enemyIni, weaponSelection());
                 System.out.println(enemy.getName() + "created with the following stats:");
                 System.out.println("AC - " + enemy.getAc());
                 System.out.println("HP - " + enemy.getCurrentHP() + "/" + enemy.getMaxHP());
@@ -96,7 +96,7 @@ public class Messages {
             }
         }
 //        scanner.close();
-        System.out.println("You created " + enemy.getName() + ", fighting with their " + enemy.getActiveWeapon().getName() + "!");
+        System.out.println("You created " + enemy.getName() + ", fighting with their " + enemy.getGetActiveWeapon().getName() + "!");
         return enemy;
     }
 

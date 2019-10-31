@@ -1,6 +1,6 @@
 package com.armco.amarted.Gear;
 
-import com.armco.amarted.Characters.Character;
+import com.armco.amarted.Characters.Heroes;
 import com.armco.amarted.Dice.Dice;
 
 public class Weapons {
@@ -24,20 +24,17 @@ public class Weapons {
 
 
 
-
-
-
-
-    public int attackDamage(int critRole, Character attacker, Character defender){
-        int atkDmg = (attacker.getActiveWeapon().getNumDice() * attacker.getActiveWeapon().diceType) +
-                attacker.getActiveWeapon().dmgBonus;
+    public int attackDamage(int critRole, Heroes attacker, Heroes defender, boolean isBonusAction) {
+        int atkDmg;
+        if(!isBonusAction) {
+            atkDmg = (attacker.getActiveWeapon().getNumDice() * attacker.getActiveWeapon().diceType) +
+                    attacker.getActiveWeapon().dmgBonus;
+        } else {
+            atkDmg = (attacker.getActiveWeapon().getNumDice() * attacker.getActiveWeapon().diceType);
+        }
 
         if(critRole == 20){
-            System.out.println("YOU ROLLED A CRITICAL HIT!!!");
             atkDmg *=2;
-        } else if(critRole == 1){
-            System.out.println("YOU ROLLED A CRIT-FAIL...");
-            atkDmg /=2;
         }
 
         //ToDo: add damage resistance by type
@@ -50,7 +47,7 @@ public class Weapons {
         return atkDmg;
     }
 
-    public void attack(Character attacker, Character defender){
+    public void attack(Heroes attacker, Heroes defender, boolean isBonusAction){
         System.out.println("Rolling to see if you hit...");
         int critRole = Dice.rollDice(20);
         int toHitRoll = critRole + attacker.getActiveWeapon().getAtkBonus();

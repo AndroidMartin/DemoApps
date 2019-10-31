@@ -31,6 +31,11 @@ public class Armor {
         this.matType = matType;
     }
 
+    public Armor(String name, int ac){
+        this.name = name;
+        this.ac = ac;
+    }
+
 
 
 
