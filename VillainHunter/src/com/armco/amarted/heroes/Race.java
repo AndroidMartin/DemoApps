@@ -1,6 +1,5 @@
-package com.armco.amarted.characters;
+package com.armco.amarted.heroes;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Race {
@@ -15,9 +14,9 @@ public class Race {
     }
 
 
-    static LinkedList<Race> inflateRaces(){
+    public static LinkedList<Race> inflateRaces(){
         LinkedList<Race> allRaces = new LinkedList<>();
-        allRaces.add(new Race("Dwarf",25,5));
+        allRaces.add(new Race("Dwarf",25,8));
         allRaces.add(new Race("Human",30,4));
         allRaces.add(new Race("Elf",40,5));
         allRaces.add(new Race("Dragonborn",45,2));

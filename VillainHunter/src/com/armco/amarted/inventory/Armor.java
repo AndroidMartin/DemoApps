@@ -18,13 +18,13 @@ public class Armor {
 
     private int calcInitiative(String matWeight){
         if(matWeight.equals("Heavy")) {
-            return -1;
+            return -2;
         }else if(matWeight.equals("Medium")) {
             return 0;
         }else if(matWeight.equals("Light")){
-            return 1;
-        } else if(matWeight.equals("None")){
             return 2;
+        } else if(matWeight.equals("None")){
+            return 4;
         } else {
             return -10;
         }
