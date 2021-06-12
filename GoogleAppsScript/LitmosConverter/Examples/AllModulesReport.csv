@@ -1,0 +1,59 @@
+Module,Course,Type,Passmark,Marking,Complete %,Relationship
+CA - Assessment 1,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Assessment,100,FALSE,98,Duplicate
+CA - Assessment 1,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Assessment,100,FALSE,89,Duplicate
+CA - Assessment 2,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Assessment,100,FALSE,89,Duplicate
+CA - Assessment 2,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Assessment,100,FALSE,98,Duplicate
+CA Managers & Supervisors - Final Assessment,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Assessment,100,FALSE,88,Duplicate
+CA Non Supervisory - Final Assessment,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Assessment,100,FALSE,97,Duplicate
+Delaware Assessment,Delaware Sexual Harassment Prevention Training (HB 360) – Supervisory Employees,Assessment,100,FALSE,100,
+Delaware Assessment,Delaware Sexual Harassment Prevention Training (HB 360) – Non-Supervisory Employees,Assessment,100,FALSE,89,Duplicate
+Evaluación,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Assessment,100,FALSE,94,
+Evaluación,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Assessment,100,FALSE,97,
+Feedback Survey,New York Sexual Harassment Prevention Training (§ 201-g),Survey,0,FALSE,52,
+HIPAA Privacy Assessment,HIPAA Privacy,Assessment,100,FALSE,97,
+Introducción,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Video,0,FALSE,68,
+Introducción,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Video,0,FALSE,81,
+Introduction,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Video,90,FALSE,87,Duplicate
+Introduction,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Video,0,FALSE,97,
+Module 1 - Introduction,Delaware Sexual Harassment Prevention Training (HB 360) – Non-Supervisory Employees,Video,0,FALSE,76,
+Module 1 - Introduction,New York Sexual Harassment Prevention Training (§ 201-g),Video,0,FALSE,65,
+Module 1 - Introduction,Delaware Sexual Harassment Prevention Training (HB 360) – Supervisory Employees,Video,0,FALSE,96,
+Module 1 - Introduction,HIPAA Privacy,Video,0,FALSE,97,
+Module 1 - Why Talk About Sexual Harassment?,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Video,0,FALSE,98,
+Module 1 - Why Talk About Sexual Harassment?,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Video,0,FALSE,87,
+Module 2 - Types of Harassment,New York Sexual Harassment Prevention Training (§ 201-g),Video,0,FALSE,65,
+Module 2 - Types of Harassment,Delaware Sexual Harassment Prevention Training (HB 360) – Non-Supervisory Employees,Video,0,FALSE,85,
+Module 2 - Types of Harassment,Delaware Sexual Harassment Prevention Training (HB 360) – Supervisory Employees,Video,0,FALSE,98,
+Module 2 - Types of Sexual Harassment,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Video,0,FALSE,97,
+Module 2 - Why do I need HIPAA Training?,HIPAA Privacy,Video,0,FALSE,99,
+Module 2: Types of Harassment,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Video,90,FALSE,88,Duplicate
+Module 3 - Employer Obligations & Retaliation,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Video,0,FALSE,98,
+Module 3 - Employer Obligations and Rights,Delaware Sexual Harassment Prevention Training (HB 360) – Supervisory Employees,Video,0,FALSE,100,
+Module 3 - Employer Obligations and Rights,New York Sexual Harassment Prevention Training (§ 201-g),Video,0,FALSE,65,
+Module 3 - Employer Obligations and Rights,Delaware Sexual Harassment Prevention Training (HB 360) – Non-Supervisory Employees,Video,0,FALSE,87,
+Module 3 - Individually Identifiable Health Information,HIPAA Privacy,Video,0,FALSE,99,
+Module 3: Employer Obligations & Retaliation,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Video,90,FALSE,88,Duplicate
+Module 4 - Employee Rights & Prevention,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Video,0,FALSE,98,
+Module 4 - Employee Rights and Prevention,New York Sexual Harassment Prevention Training (§ 201-g),Video,0,FALSE,65,
+Module 4 - Employee Rights and Prevention,Delaware Sexual Harassment Prevention Training (HB 360) – Supervisory Employees,Video,0,FALSE,100,
+Module 4 - Employee Rights and Prevention,Delaware Sexual Harassment Prevention Training (HB 360) – Non-Supervisory Employees,Video,0,FALSE,82,
+Module 4 - Key Terms,HIPAA Privacy,Video,0,FALSE,98,
+Module 4: Employee Rights & Prevention,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Video,90,FALSE,89,Duplicate
+Module 5 - Case Studies,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Non-Supervisory Employees",Video,0,FALSE,98,
+Module 5 - Conclusion,New York Sexual Harassment Prevention Training (§ 201-g),Video,0,FALSE,65,
+Module 5 - Uses and Disclosures,HIPAA Privacy,Video,0,FALSE,99,
+Module 5: Case Studies,"California Sexual Harassment Prevention (AB 1825, AB 2053 , SB 396 & SB 1343) – Managers & Supervisors",Video,90,FALSE,89,Duplicate
+Module 6 - Electronic PHI,HIPAA Privacy,Video,0,FALSE,99,
+Module 7 - Privacy Practices Notices & Disclosures,HIPAA Privacy,Video,0,FALSE,98,
+Module 8 - Breaches & Compliance,HIPAA Privacy,Video,0,FALSE,99,
+Módulo 1 - Por qué hablar sobre el acoso sexual,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Video,0,FALSE,98,
+Módulo 1 - Por qué hablar sobre el acoso sexual,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Video,0,FALSE,97,
+Módulo 2 - Tipos de acoso sexual,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Video,0,FALSE,98,
+Módulo 2 - Tipos de acoso sexual,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Video,0,FALSE,97,
+Módulo 3 - Obligaciones del empleador y represalias,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Video,0,FALSE,99,
+Módulo 3 - Obligaciones del empleador y represalias,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Video,0,FALSE,97,
+Módulo 4 - Los derechos de los empleados y la prevención,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Video,0,FALSE,99,
+Módulo 4 - Los derechos de los empleados y la prevención,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Video,0,FALSE,99,
+Módulo 5 - Estudios significativos de casos de acoso sexual,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Gerentes y Supervisores",Video,0,FALSE,100,
+Módulo 5 - Estudios significativos de casos de acoso sexual,"Prevención del Acoso Sexual en California (AB 1825, AB 2053, SB 396 y SB 1343) - Empleados No Supervisores",Video,0,FALSE,99,
+NY Compliance Assessment,New York Sexual Harassment Prevention Training (§ 201-g),Assessment,100,FALSE,64,
