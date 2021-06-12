@@ -5,8 +5,15 @@ The "Examples" folder contains the raw reports exported from the LMS.  Each "Scr
 Instructions: 
 	1) Open Google Sheets
 	2) Add "Scripts" files to Scripts
-		a. Lorem Ipsum***
+		a. Tools -> Script editor
+		b. Create new ".gs" files in Google editor
+		c. Paste code from each file in "Scripts" folder to files in editor
+		d. Run "onOpen" from "Code.gs" -OR- reload the spreadsheet
 	3) Import one of the "Example" CSV files (take note of report type)
+		a. File -> Import -> Upload
+		b. Upload file(s)
+		c. Change "Import location" to "Insert new sheets(s)"
+		d. Import Data
 	4) Select "RM Tools" in the menu bar
 	5) Perform desired action on report
 		 It is recommended to match report type to function.
