@@ -7,7 +7,7 @@ function alertColumnMisMatch() {
 }
 
 function alertAlreadyConverted() {
-  var response = ui.alert("Looks like the column structure has already been converted.  Would you like to format the sheet?",ui.ButtonSet.YES_NO);
+  var response = ui.alert("Looks like the column structure has already been converted.  Would you like to format the sheet instead?",ui.ButtonSet.YES_NO);
   Logger.log('Want to format sheet: ' + response);
   return response;
 }
@@ -42,6 +42,21 @@ function promptCertExpire() {
   return response;
 }
 
+function promptCertExpireYrs(){
+  ui = SpreadsheetApp.getUi();
+  var yrs;
+  do {
+    var response = ui.prompt('Certification Length','How many years is the certificate valid for?\n'+tenYearStates+' = 10\n'+twoYearStates+' = 2\n'+oneYearStates+' = 1',ui.ButtonSet.OK);
+    var text = parseInt(response.getResponseText());
+    var button = response.getSelectedButton();
+  } while (!(button == ui.Button.CLOSE) && !(text == 10 || text == 2 || text == 1)); // !(/^[0-9]+$/.test(text)) <-- To test if positive int
+  if (button == ui.Button.OK){
+    yrs = response.getResponseText();
+  }
+  Logger.log('Cert expires in %s years',yrs);
+  return yrs;
+}
+
 function promptClientOrRM() {
   ui = SpreadsheetApp.getUi();
   var response = ui.alert('Is this being sent to the client?',ui.ButtonSet.YES_NO);
@@ -51,6 +66,18 @@ function promptClientOrRM() {
 
 function displayKey() {
   SpreadsheetApp.getUi().alert("⚠️ Employee Record Key", 'Only adjust those records highlighted in Red. The color code is as follows: \n\nRED: Updates Required - These are the records to adjust\nWHITE: Correct Records - Ignore these employees\nGREEN: Completed Updates - These records have already been updated\nBLACK: Inactive Employees - Ignore these employees', SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+function displayValues(range){
+  checkCols();
+  checkRows();
+  if (range == null) {
+    range = sheet.getActiveRange();
+  }
+  var cols = 'lastCol: ' + lastCol + '   maxCol: ' + maxCol;
+  var rows = 'lastRow: ' + lastRow + '   maxRow: ' + maxRow;
+  var rangeA1 = 'activeRange: ' + range.getA1Notation();
+  SpreadsheetApp.getUi().alert(cols + '\n' + rows + '\n' + rangeA1,SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
 function functionTBD() {
@@ -73,9 +100,6 @@ var formatOnly = colStructureTrue + ' Formatting instead.';
 
 
 
-
-
-
 function msgColumnFormat() {
   ui.alert("⚠️ Column Mismatch",'Your total number of columns does not match what is expected for this type of report. \nConditional format will NOT be applied!',SpreadsheetApp.getUi().ButtonSet.OK);
 }
@@ -86,20 +110,3 @@ function alertOperationCancelled() {
 }
 
 
-function promptCertificationLength(){
-  ui = SpreadsheetApp.getUi();
-  do {
-    var response = ui.prompt('How many years is the certification valid for?\nEnter "0" if it does not expire ' + nonExpiringStates + '.');
-    var number = parseInt(response.getResponseText());
-    var button = response.getSelectedButton();
-  }
-  while (!(/^[0-9]+$/.test(number)) && !(button == ui.Button.CLOSE));  // RegExp Help: https://www.w3schools.com/jsref/jsref_regexp_ndollar.asp
-  
-  if (response.getSelectedButton() == ui.Button.OK){
-    Logger.log("User's entry: '%s'",response.getResponseText());
-    Logger.log("Entry used: '%s'",number);
-    return number;
-  } else {
-    Logger.log('User cancelled');
-  }
-}
