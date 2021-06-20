@@ -1,11 +1,23 @@
 // Set A1 Formulas in variable form
-var a1FormulaExp = '=IF(ISERROR(FILTER(B2:B,G2:G>80,H2:H=FALSE)),"0/0",COUNTA(FILTER(B2:B,G2:G>80,H2:H=FALSE))-COUNTIF(A2:A,"=TRUE")-COUNTIFS(J2:J,"=FALSE",G2:G,">80",H2:H,"=FALSE") & "/" & COUNTA(FILTER(B2:B,G2:G>80,H2:H=FALSE))-COUNTIFS(J2:J,"=FALSE",G2:G,">80",H2:H,"=FALSE"))';
-var a1FormulaInf = '=IF(ISERROR(FILTER(B2:B,NOT(ISBLANK(R2:R)))),"0/0",COUNTA(FILTER(B2:B,NOT(ISBLANK(R2:R))))-COUNTIF(A2:A,"=TRUE") & "/" & COUNTA(FILTER(B2:B,NOT(ISBLANK(R2:R)))))';
-var a1FormulaCT = ''; // ToDo: Add formula for 10 year certification
+function setA1Courses(exp){
+  if (exp == null) {
+    exp = getExpiresYrs();
+  }
+  if (exp == 0) {
+    formula = '=IF(ISERROR(FILTER(B2:B,NOT(ISBLANK(R2:R)))),"0/0",COUNTA(FILTER(B2:B,NOT(ISBLANK(R2:R))))-COUNTIF(A2:A,"=TRUE") & "/" & COUNTA(FILTER(B2:B,NOT(ISBLANK(R2:R)))))';
+  } else if (exp == 1 || exp == 2) {
+    formula = '=IF(ISERROR(FILTER(B2:B,G2:G>80,H2:H=FALSE)),"0/0",COUNTA(FILTER(B2:B,G2:G>80,H2:H=FALSE))-COUNTIF(A2:A,"=TRUE")-COUNTIFS(J2:J,"=FALSE",G2:G,">80",H2:H,"=FALSE") & "/" & COUNTA(FILTER(B2:B,G2:G>80,H2:H=FALSE))-COUNTIFS(J2:J,"=FALSE",G2:G,">80",H2:H,"=FALSE"))';
+  } else if (exp == 10) {
+    formula = ''; // ToDo: Add formula for 10 year certification
+  } else {
+    alertMissingInfo('Certification Length');
+  }
+  return formula;
+}
 
 
 function convertCourseReport(exp){
-  sheet = ss.getActiveSheet();
+  sheet = ss.getActiveSheet();  // Change to match other scripts - wasDeleted instead of wasFormatted???
   if (alertConfirmConversion('Course') == "YES"){ // Confirm action
     var wasFormatted = delColumnsCourse(exp); // Delete columns
     if (wasFormatted == false){ // if wasn't formatted during deletion, do so now
@@ -44,7 +56,7 @@ function delColumnsCourse(exp) {
         ss.toast(msgCancelledOperation);
       }
   } else {
-    alertColumnMisMatch(); // column structure didn't match expected
+    alertColumnMisMatch('17, 18, or 35',lastCol,'delColumnsCourse');
   }
   return wasFormatted;
 }
@@ -75,13 +87,13 @@ function formatCourseReport(exp){
 
   // At this point, it should be properly converted and formatting can be applied
   if (lastCol == 18 || lastCol == 17){ 
-    startFormat();
     // Does the sheet have checkboxes? if NO, then add them.
     if (!testCheckBox()){
-      addCheckBoxes();
+      addCheckBoxes(setA1Courses(exp));
       checkCols();
-      addA1Formula(exp);
     }
+    startFormat();
+    var sortOrder = [7,1];
     var formulaArray = [];
     var rules = [];
     var rulesX = [];
@@ -90,7 +102,6 @@ function formatCourseReport(exp){
     Logger.log('Formatting range: ' + range.getA1Notation());
 
     // Formatting Rules
-    sheet.clearConditionalFormatRules();
     formulaArray.push("=$A2"); // For checkboxes
     rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("lime").setRanges([range]).build());
     formulaArray.push("=$J2=FALSE"); // For finding inactive users
@@ -119,25 +130,14 @@ function formatCourseReport(exp){
         addConditionalFormatRule(sheet,rules[i]);
     }
 
-    range.sort([7,1]);
+    sortReport(range,sortOrder);
     cleanUp();
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('17, 18, or 35',lastCol,'formatCourseReport');
   }
 }
 
-function addA1Formula(exp){
-  var formula;
-  if (exp == 0) {
-    formula = a1FormulaInf;
-  } else if (exp == 1 || exp == 2) {
-    formula = a1FormulaExp;
-  } else if (exp == 10) {
-    formula = a1FormulaCT;
-  }
-  sheet.getRange("A1").setFormula(formula);
-  sheet.autoResizeColumn(1);
-}
+
 
 // Functions to be called in menu options
 function convert2yrCourseReport(){
