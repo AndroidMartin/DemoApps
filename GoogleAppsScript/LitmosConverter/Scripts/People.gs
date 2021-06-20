@@ -1,8 +1,11 @@
 function convertPeopleReport() {
   sheet = ss.getActiveSheet();
   if (alertConfirmConversion('People') == "YES"){
-    if (delColumnsPeople() == false){
+    var wasDeleted = delColumnsPeople();
+    if (wasDeleted){
       formatPeopleReport();
+    } else if (wasDeleted == null){ // if null, there was an error during formatting
+      ss.toast(msgCancelledOperation);
     }
   }else {
     ss.toast(msgCancelledOperation);
@@ -12,7 +15,6 @@ function convertPeopleReport() {
 function delColumnsPeople() {
   sheet = ss.getActiveSheet();
   checkCols();
-  var wasFormatted = false;
 
   if (lastCol == 51) {
     ss.toast(msgStartColDelete);
@@ -29,22 +31,22 @@ function delColumnsPeople() {
     sheet.hideColumns(24,2);
     sheet.getRange('J1').setValue('% Comp');
     cleanUp();
+    return true;
   } else if (lastCol == 27) {
     if (alertAlreadyConverted() == "YES") {
       formatPeopleReport();
     } else {
       ss.toast(msgCancelledOperation);
     }
-    wasFormatted = true;
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('27 or 51',lastCol,'delColumnsPeople');
+    return false;
   }
-  return wasFormatted;
 }
 
 function formatPeopleReport(){
   sheet = ss.getActiveSheet();
-  startFormat();
+  checkCols();
   var formulaArray = [];
   var rules = [];
 
@@ -58,19 +60,28 @@ function formatPeopleReport(){
   }
 
   if (lastCol == 27){
+    startFormat();
     var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
     Logger.log('Formatting range: ' + range.getA1Notation());
 
     // //ToDo: add formatting rules
-    // formulaArray.push("=$E2");
-    // rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("#b7e1cd").setRanges([range]).build());
+    formulaArray.push('=$I2=FALSE'); // For finding inactive users
+    formulaArray.push('=$N2>0');
+    formulaArray.push('=OR($J2=100,$J2=50)');
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("black").setFontColor("white").setRanges([range]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[1]).setBackground("orange").setRanges([range]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("#4adb8c").setRanges([range]).build());
 
     for (i=0;i<rules.length;i++){
       addConditionalFormatRule(sheet,rules[i]);
     }
+    var sortOrder = [{column: 10, ascending: false},1]; // ToDo: Confirm sort order
     cleanUp();
+    sortReport(range,sortOrder);
+    return true;
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('27 or 51',lastCol,'formatPeopleReport');
+    return false;
   }
 }
 
@@ -82,6 +93,7 @@ function convertPeopleForBulkUpload(){
 
   if (alertConfirmConversion('People') == "YES"){
     if (lastCol == 51){
+      ss.toast(msgStartColDelete);
       sheet.hideColumns(19,1);
       sheet.deleteColumns(47,maxCol-46);
       sheet.deleteColumns(44,2);
@@ -109,7 +121,7 @@ function convertPeopleForBulkUpload(){
       // ToDo: Format col 1-5 to be yellow if empty
       // ToDo: Format to highlight team leaders if(col 23 == 4){} -> blue)
     } else {
-      alertColumnMisMatch();
+      alertColumnMisMatch('51',lastCol,'convertPeopleForBulkUpload');
       return;
     }
     cleanUp();
@@ -149,15 +161,21 @@ function titleCase(col) {
 function formatForUpload() {
   sheet = ss.getActiveSheet();
   checkCols();
+  var sortOrder = null; // ToDo: add sorting order
+  var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
   var reportType;
   var msgReportType = 'This is a %s report and is%s ready to be formatted'
   if (lastCol == 23){
+    startFormat(); // Do you need to format???
     reportType = ['PEOPLE',''];
+    sortReport(range,sortOrder);
   } else if (lastCol == 51){
+    startFormat(); // Do you need to format???
     reportType = ['PEOPLE',' NOT'];
     // Ask to run adjust column structure (NOTE: different than delColumnsPeople)
+    sortReport(range,sortOrder);
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('23 or 51',lastCol,'formatForUpload');
     Logger.log('Did not formatForUpload as the column structure is NOT an expected format');
     return;
   }
@@ -176,11 +194,5 @@ function lowerCase(col) {
 }
 
 
-
 // var pattern1 = val.toLowerCase().replace(/\b[a-z]/ig, function(match) {return match.toUpperCase()});
-
-
-
-
-
 
