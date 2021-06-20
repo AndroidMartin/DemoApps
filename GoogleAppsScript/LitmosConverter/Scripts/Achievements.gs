@@ -28,7 +28,7 @@ function delColumnsAchievements() {
     sheet.deleteColumn(5);
     cleanUp();
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('9 or 22',lastCol,'delColumnsAchievements');
   }
   return wasFormatted;
 }
@@ -36,7 +36,8 @@ function delColumnsAchievements() {
 
 function formatAchievementsReport(){
   sheet = ss.getActiveSheet();
-  startFormat();
+  checkCols();
+  checkRows();
   var formulaArray = [];
   var rules = [];
 
@@ -50,6 +51,8 @@ function formatAchievementsReport(){
   }
 
   if (lastCol == 9) {
+    startFormat();
+    var sortOrder = [4,{column: 3, ascending: false}];
     var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
     Logger.log('Formatting range: ' + range.getA1Notation());
 
@@ -64,7 +67,8 @@ function formatAchievementsReport(){
       addConditionalFormatRule(sheet,rules[i]);
     }
     cleanUp();
+    sortReport(range,sortOrder);
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('9 or 22',lastCol,'formatAchievementsReport');
   }
 }
