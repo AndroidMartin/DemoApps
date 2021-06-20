@@ -7,9 +7,12 @@ var lastRow = 0;
 var lastCol = 0;
 var expiringStates = '(CA, CT, DE, NY)';
 var nonExpiringStates = '(ME, Fed)';
+var twoYearStates = 'CA & DE';
+var oneYearStates = 'NY';
+var tenYearStates = 'CT';
+var zeroYearStates = 'ME & Fed';
 
 // ToDo: Call 'ss' in "Major" functions and pass into "Minor" functions -OR- if 'ss' isn't passed to them, then getSS() - e.g.  formatTeamReport(ss)
-// ToDo: Add to GitHub
 
 function onOpen() {
   // var report1 = 'Course Report';
@@ -50,9 +53,10 @@ function onOpen() {
           .addItem(expiringCourses,'clientComplianceReport')
           .addItem(nonExpiringCourses,'client0yrComplianceReport')
         )
+        .addItem('Hybrid','hybridComplianceReport')
         .addSeparator()
         .addItem('Add Checkboxes','formatComplianceReportHybrid') // Still working on functionality
-        .addItem('Delete Columns','delColumnsCompliance') // Check functionality
+        .addItem('Delete Columns','delColumnsCompliance')
       )
       .addSubMenu(ui.createMenu('Team Report')
         .addItem('Convert Team','convertTeamReport')
@@ -61,6 +65,7 @@ function onOpen() {
       )
       .addSubMenu(ui.createMenu('People Reports')
         .addItem('Convert People','convertPeopleReport')
+        .addSeparator()
         .addItem('Bulk Corrections', 'convertPeopleForBulkUpload')
       )
       .addSubMenu(ui.createMenu('Learning Path Report')
@@ -126,6 +131,9 @@ function onOpen() {
     .addSubMenu(ui.createMenu('Help')
       .addItem('RM Color Key','displayKey')
       .addItem('Contact Developer','emailDev')
+      .addSubMenu(ui.createMenu('Dev Tools')
+        .addItem('Check Values','displayValues') // Add proper command
+      )
     )
   .addToUi();
 }
@@ -182,9 +190,15 @@ function addCheckBoxes(a1Formula){
   enforceCheckbox.build();
 
   firstColumn.setDataValidation(enforceCheckbox);
-  // ToDo: Set formula in A1
+  // Set formula in A1
+  if (!(a1Formula == null)) {
+    sheet.getRange("A1").setFormula(a1Formula);
+  }
+
+  // Clean up the environment
   sheet.autoResizeColumn(1);
   checkCols();
+
   // ToDo: get current formatting rules and add checkbox rule to position [0]
 }
 
@@ -206,7 +220,7 @@ function addConditionalFormatRule(sheet, rule){
   rules = sheet.getConditionalFormatRules();
   rules.push(rule);
   sheet.setConditionalFormatRules(rules);
-  Logger.log('Set %s as format',rule);
+  Logger.log('Set %s as format',rule);  // doesn't provide good data
 }
 
 function clearSheet(){
@@ -263,16 +277,39 @@ function getExpires(){
     } else {
       Logger.log('Returning null');
     }
-  }
+}
+
+function getExpiresYrs(){
+    var responseExpires = promptCertExpire();
+    if (responseExpires == 'YES') {
+      return promptCertExpireYrs(); // Prompt for number of years and return
+    } else if (responseExpires == 'NO') {
+      return 0;
+    } else {
+      Logger.log('Returning null');
+    }
+}
 
 
 function startFormat(){
-  ss.toast(msgStartFormat);
-  Logger.log('Set up formatting variables'); // ToDo: Remove unused log entries
-  sheet = ss.getActiveSheet();
-  // formulaArray = [];
-  // rules = [];
+  ss.toast(msgStartFormat); // Keep this here???
+  Logger.log('Setting up formatting variables'); // ToDo: Remove unused log entries
   sheet.clearConditionalFormatRules();
-  checkCols();
   checkRows();
 }
+
+function sortReport(range,sortOrder){
+  ss.toast(msgSortReport);
+  if (range == null){
+    checkCols();
+    checkRows();
+    var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
+  }
+  if (sortOrder == null) {
+    // ToDo: add msg/alert that there is no sort order
+    alertSortFailed();
+    return;
+  }
+  range.sort(sortOrder);
+}
+
