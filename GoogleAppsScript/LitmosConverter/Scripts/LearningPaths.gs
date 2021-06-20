@@ -1,5 +1,15 @@
 function convertLearningPathsReport() {
   sheet = ss.getActiveSheet();
+
+  // if (alertConfirmConversion('Learning Path') == "YES"){
+  //   var wasDeleted = delColumnsLearningPath();
+  //   if (wasDeleted == true) {
+  //     formatLearningPathReport();
+  //   }
+  // } else {
+  //   ss.toast(msgCancelledOperation);
+  // }
+
   if (alertConfirmConversion('Learning Path') == "YES"){
     if (delColumnsLearningPath() == false){
       formatLearningPathReport();
@@ -12,7 +22,7 @@ function convertLearningPathsReport() {
 function delColumnsLearningPath() {
   sheet = ss.getActiveSheet();
   checkCols();
-  var wasFormatted = false;
+  var wasFormatted = false;  // Change to wasDeleted ???
 
   if (maxCol == 13) {
     if (alertAlreadyConverted() == "YES"){
@@ -34,7 +44,7 @@ function delColumnsLearningPath() {
     sheet.getRange('F1').setValue('% Comp');
     cleanUp();
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('13 or 28',lastCol,'delColumnsLearningPath');
   }
   return wasFormatted;
 }
@@ -42,7 +52,7 @@ function delColumnsLearningPath() {
 
 function formatLearningPathReport(){
   sheet = ss.getActiveSheet();
-  startFormat(); // ToDo: move startFormat() to when formatting actually starts - replace with colCheck() here. --> Do this on all formatting scripts
+  checkCols();
   var formulaArray = [];
   var rules = [];
 
@@ -56,6 +66,8 @@ function formatLearningPathReport(){
   }
 
   if (lastCol == 13){
+    startFormat();
+    var sortOrder = [{column: 6, ascending: false},1];
     var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
     Logger.log('Formatting range: ' + range.getA1Notation());
 
@@ -66,7 +78,8 @@ function formatLearningPathReport(){
       addConditionalFormatRule(sheet,rules[i]);
     }
     cleanUp();
+    sortReport(range,sortOrder);
   } else {
-    alertColumnMisMatch();
+    alertColumnMisMatch('13 or 28',lastCol,'formatLearningPathReport');
   }
 }
