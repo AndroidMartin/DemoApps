@@ -1,9 +1,14 @@
 var msgCancelledOperation = 'The operation has been cancelled!';
 var msgStartColDelete = 'Adjusting column structure...';
 var msgStartFormat = 'Conditional formatting being applied...';
+var msgSortReport = 'Sorting Report...';
 
-function alertColumnMisMatch() {
-  ui.alert("⚠️ Column Mismatch",'Your column structure does NOT match what is expected for this type of report and the operation has been cancelled!  Please confirm that you have the correct report selected before attempting the operation again.',SpreadsheetApp.getUi().ButtonSet.OK);
+function alertColumnMisMatch(colExpected,colActual,where) { // ToDo: add fields to pass in expected and actual column count?
+  var fun = ' - Was expecting' + colExpected + ' columns; you have ' + colActual + '. [' + where +']';
+  if (where == null){
+    fun = '';
+  }
+  ui.alert("⚠️ Column Mismatch",'Your column structure does NOT match what is expected for this type of report and the operation has been cancelled!  Please confirm that you have the correct report selected before attempting the operation again.' + fun,SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
 function alertAlreadyConverted() {
@@ -15,6 +20,17 @@ function alertAlreadyConverted() {
 function alertNeedsConversion() {
   var response = ui.alert("⚠️ Adjust Columns",'Your total number of columns indicates this report still needs to be converted before formatting can be applied. \nWould you like to convert the sheet now?',SpreadsheetApp.getUi().ButtonSet.YES_NO);
   Logger.log('Want to convert sheet: ' + response);
+  return response;
+}
+
+function alertLoseCheckboxes(){
+  var response = ui.alert("⚠️ Change Formatting",'It seems you have previously added checkboxes. If you continue, you will lose all checked boxes! \nWould you like to proceed anyway?',SpreadsheetApp.getUi().ButtonSet.YES_NO);
+  Logger.log('Want to convert sheet: ' + response);
+  return response;
+}
+
+function alertSortFailed(){
+  var response = ui.alert('⚠️ Sorting Failed','A proper sorting order was not established.',SpreadsheetApp.getUi().ButtonSet.OK);
   return response;
 }
 
@@ -108,5 +124,4 @@ function msgColumnFormat() {
 function alertOperationCancelled() {
   ui.alert("⚠️ Cancelled",cancelledOperation,SpreadsheetApp.getUi().ButtonSet.OK);
 }
-
 
