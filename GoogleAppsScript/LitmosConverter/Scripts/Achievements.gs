@@ -1,4 +1,5 @@
 function convertAchievementsReport() {
+  Logger.log('Starting to run %s','convertAchievementsReport');
   sheet = ss.getActiveSheet();
   if (alertConfirmConversion('Achievements') == "YES"){
     if (delColumnsAchievements() == false) {
@@ -10,6 +11,7 @@ function convertAchievementsReport() {
 }
 
 function delColumnsAchievements() {
+  Logger.log('Starting to run %s','delColumnsAchievements');
   sheet = ss.getActiveSheet();
   checkCols();
   var wasFormatted = false;
@@ -23,7 +25,7 @@ function delColumnsAchievements() {
     }
   } else if (lastCol == 22) {
     ss.toast(msgStartColDelete);
-    sheet.deleteColumns(13,maxCol-12); // run delCols and change to (13,lastCol) ???
+    sheet.deleteColumns(13,maxCol-12);
     sheet.deleteColumns(10,2);
     sheet.deleteColumn(5);
     cleanUp();
@@ -35,6 +37,7 @@ function delColumnsAchievements() {
 
 
 function formatAchievementsReport(){
+  Logger.log('Starting to run %s','formatAchievementsReport');
   sheet = ss.getActiveSheet();
   checkCols();
   checkRows();
