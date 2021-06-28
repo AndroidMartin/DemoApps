@@ -1,69 +1,173 @@
-function convertAssessmentsReportALL() {
-  sheet = ss.getActiveSheet();
-  checkCols();
-  if (maxCol == 6){
-    if (alertAlreadyConverted() == "YES"){
-      formatAssessmentsReportALL();
-    } else {
-      ss.toast(msgCancelledOperation);
-    }
-  } else if (lastCol == 7){
-    if (alertConfirmConversion('All Assessments') == "YES"){
-      if (delColumnsAssessments()){
-        formatAssessmentsReportALL();
-      }
-    } else{
-      ss.toast(msgCancelledOperation);
-    }
-  } else {
-    alertColumnMisMatch('6 or 7',lastCol,'convertAssessmentsReportALL');
-  }
+function convertAssessmentsReportSpec() {
+  Logger.log('Starting to run %s','convertAssessmentsReportSpec');
+  convertAssessmentsReport('Specific');
 }
 
-function convertAssessmentsReportSpec() {
+function convertAssessmentsReportALL() {
+  Logger.log('Starting to run %s','convertAssessmentsReportALL');
+  convertAssessmentsReport('ALL');
+}
+
+function convertAssessmentsReport(type){
+  Logger.log('Starting to run %s','convertAssessmentsReport');
   sheet = ss.getActiveSheet();
   checkCols();
-  if (maxCol == 11){
-    if (alertAlreadyConverted() == "YES"){
-      formatAssessmentsReportSpec();
+
+  if (alertConfirmConversion('Assessments') == "YES"){
+    if (delColumnsAssessments()){
+      if (type = 'ALL'){
+        formatAssessmentsReportALL();
+      } else if (type = 'Specific'){
+        formatAssessmentsReportSpec();
+      } else {
+        alertTypeUndefined('assessments');
+        ss.toast(msgCancelledOperation);
+      }
     } else {
       ss.toast(msgCancelledOperation);
     }
-  } else if (lastCol == 16){
-    if (alertConfirmConversion('Specific Assessment') == "YES"){
-      if (delColumnsAssessments()) {
-        formatAssessmentsReportSpec();
-      }
-    } else {
-      ss.toast(cancelledOperation);
-    }
   } else {
-    alertColumnMisMatch('11 or 16',lastCol,'convertAssessmentsReportSpec');
+    ss.toast(msgCancelledOperation);
   }
 }
 
 function delColumnsAssessments() {
+  Logger.log('Starting to run %s','delColumnsAssessments');
   sheet = ss.getActiveSheet();
-  checkCols();
   var wasDeleted = false;
-  if (lastCol == 16){
+  checkCols();
+
+  if (lastCol == 11 || lastCol == 5){
+    if (alertAlreadyConverted() == "YES"){
+      if (lastCol == 5){
+        formatAssessmentsReportALL();
+      } else {
+        formatAssessmentsReportSpec();
+      }
+    } else {
+      ss.toast(msgCancelledOperation);
+    }
+  } else if (lastCol == 16){
     wasDeleted = delColumnsAssessmentsSpec();
   } else if (lastCol == 7){
     wasDeleted = delColumnsAssessmentsALL();
   } else {
     alertColumnMisMatch('7 or 16',lastCol,'delColumnsAssessments');
   }
+
   if (wasDeleted) {
     cleanUp();
   }
   return wasDeleted;
 }
 
-function delColumnsAssessmentsALL() {
-  ss.toast(msgStartColDelete);
+function formatAssessmentsReportALL(){
+  Logger.log('Starting to run %s','formatAssessmentsReportALL');
   sheet = ss.getActiveSheet();
   checkCols();
+  checkRows();
+
+  if (lastCol == 16 || lastCol == 7){
+    if (alertNeedsConversion() == "YES") {
+      delColumnsAssessments();
+    }
+  } else if (lastCol == 11) {
+    if (alertSwap('a Specific Assessment') == "OK"){
+      Logger.log('Swapping to Specific Assessment');
+      formatAssessmentsReportSpec();
+      return;
+    } else {
+      ss.toast(msgCancelledOperation);
+      return;
+    }
+  }
+
+  if (!(lastCol == 5)){
+    alertColumnMisMatch('5',lastCol,'formatAssessmentsReportALL');
+    return;
+  }
+
+  // At this point, the sheet has been properly converted
+  var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
+  var formulaArray = [];
+  var rules = [];
+  var sortOrder = [2,1, {column: 4, ascending: false}];
+  startFormat();
+  // Formatting rules
+  formulaArray.push('=$D2=100');
+  formulaArray.push('=$D2>0');
+  formulaArray.push('=$D2=0');
+  formulaArray.push('=ROW()=1');
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("#b7e1cd").setRanges([range]).build());
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[1]).setBackground("orange").setRanges([range]).build());
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
+  var range1 = sheet.getRange(sheet.getRange(1,1,1,lastCol).getA1Notation()); // Formatting for first row - ToDo: add somewhere else to be called and added?
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[3]).setBackground("magenta").setRanges([range1]).build());
+
+  for (i=0;i<rules.length;i++){
+    addConditionalFormatRule(sheet,rules[i]);
+  }
+
+  cleanUp();
+  sortReport(range,sortOrder);
+}
+
+function formatAssessmentsReportSpec(){
+  Logger.log('Starting to run %s','formatAssessmentsReportSpec');
+  sheet = ss.getActiveSheet();
+  checkCols();
+  checkRows();
+
+  if (lastCol == 16 || lastCol == 7){
+    if (alertNeedsConversion() == "YES") {
+      delColumnsAssessments();
+    }
+  } else if (lastCol == 5) {
+    if (alertSwap('an ALL Assessments') == "OK"){
+      Logger.log('Swapping to ALL Assessment');
+      formatAssessmentsReportALL();
+      return;
+    } else {
+      ss.toast(msgCancelledOperation);
+      return;
+    }
+  }
   
+  if (!(lastCol == 11)){
+    alertColumnMisMatch('11',lastCol,'formatAssessmentsReportSpec');
+    return;
+  }
+
+  // At this point, the sheet has been properly converted
+  var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
+  var formulaArray = [];
+  var rules = [];
+  var sortOrder = [7,{column: 8, ascending: false},9,1];
+  startFormat();
+
+  // Formatting rules
+  formulaArray.push('=$H2');
+  formulaArray.push('=$I2="In Progress"');
+  formulaArray.push('=$I2="Failed"');
+  formulaArray.push('=$G2');
+  formulaArray.push('=ROW()=1');
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("#b7e1cd").setRanges([range]).build());
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[1]).setBackground("orange").setRanges([range]).build());
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[3]).setBackground("black").setFontColor("white").setRanges([range]).build());
+  var range1 = sheet.getRange(sheet.getRange(1,1,1,lastCol).getA1Notation()); // Formatting for first row - ToDo: add somewhere else to be called and added?
+  rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[4]).setBackground("magenta").setRanges([range1]).build());
+
+  for (i=0;i<rules.length;i++){
+    addConditionalFormatRule(sheet,rules[i]);
+  }
+
+  cleanUp();
+  sortReport(range,sortOrder);
+}
+
+function delColumnsAssessmentsALL() {
+  Logger.log('Starting to run %s','delColumnsAssessmentsALL');
   sheet.deleteColumns(8,maxCol-7);
   sheet.deleteColumn(5);
   sheet.deleteColumn(3);
@@ -72,6 +176,7 @@ function delColumnsAssessmentsALL() {
 }
 
 function delColumnsAssessmentsSpec() {
+  Logger.log('Starting to run %s','delColumnsAssessmentsSpec');
   ss.toast(msgStartColDelete);
   sheet.deleteColumns(14,maxCol-13);
   sheet.deleteColumn(9);
@@ -80,23 +185,3 @@ function delColumnsAssessmentsSpec() {
   return true;
 }
 
-
-function formatAssessmentsReportALL(){
-  functionTBD();
-  startFormat();
-  return;
-  sheet = ss.getActiveSheet();
-  // ToDo: Add formatting rules
-  cleanUp();
-  sortReport(range,sortOrder);
-}
-
-function formatAssessmentsReportSpec(){
-  functionTBD();
-  startFormat();
-  return;
-  sheet = ss.getActiveSheet();
-  // ToDo: Add formatting rules
-  cleanUp();
-  sortReport(range,sortOrder);
-}
