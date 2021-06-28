@@ -1,14 +1,6 @@
 function convertLearningPathsReport() {
+  Logger.log('Starting to run %s','convertLearningPathsReport');
   sheet = ss.getActiveSheet();
-
-  // if (alertConfirmConversion('Learning Path') == "YES"){
-  //   var wasDeleted = delColumnsLearningPath();
-  //   if (wasDeleted == true) {
-  //     formatLearningPathReport();
-  //   }
-  // } else {
-  //   ss.toast(msgCancelledOperation);
-  // }
 
   if (alertConfirmConversion('Learning Path') == "YES"){
     if (delColumnsLearningPath() == false){
@@ -20,6 +12,7 @@ function convertLearningPathsReport() {
 }
 
 function delColumnsLearningPath() {
+  Logger.log('Starting to run %s','delColumnsLearningPath');
   sheet = ss.getActiveSheet();
   checkCols();
   var wasFormatted = false;  // Change to wasDeleted ???
@@ -51,6 +44,7 @@ function delColumnsLearningPath() {
 
 
 function formatLearningPathReport(){
+  Logger.log('Starting to run %s','formatLearningPathReport');
   sheet = ss.getActiveSheet();
   checkCols();
   var formulaArray = [];
@@ -71,8 +65,12 @@ function formatLearningPathReport(){
     var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
     Logger.log('Formatting range: ' + range.getA1Notation());
 
-    formulaArray.push("=$E2");
+    formulaArray.push('=$E2');
+    formulaArray.push('=$F2>0');
+    formulaArray.push('=$F2=0');
     rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("#b7e1cd").setRanges([range]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[1]).setBackground("orange").setRanges([range]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
 
     for (i=0;i<rules.length;i++){
       addConditionalFormatRule(sheet,rules[i]);
