@@ -12,7 +12,7 @@ function compReportSetup(expires,type){
 }
 
 function delColumnsCompliance(expires, type) {
-  Logger.log('Starting to run %s','delColumnsCompliance'); // ToDo: Log start of every function
+  Logger.log('Starting to run %s','delColumnsCompliance'); // Log start of every function
   sheet = ss.getActiveSheet();
   checkCols();
 
@@ -27,7 +27,7 @@ function delColumnsCompliance(expires, type) {
   } else if (lastCol == 8 || lastCol == 10) { // ToDo: Update other scripts to follow same structure
     // column structure fine - format as RM or client?
     if (alertAlreadyConverted() == "YES") {
-      formatComplianceReport(expires,type);  // ToDo: verify format exited correctly? - Checks in formatting provide adequate alerts?
+      formatComplianceReport(expires,type);
     } else {
       ss.toast(msgCancelledOperation);
     }
@@ -48,7 +48,6 @@ function formatComplianceReport(expires, type){
     if (expires == null){
       Logger.log("Format not applied, 'expires' is null.");
       ss.toast(msgCancelledOperation);
-      // alertMissingInfo('Expiration status (true/false)');
       return false;
     }
   }
@@ -96,7 +95,7 @@ function formatComplianceReport(expires, type){
   var sortOrder = [];
 
   if (type == 'client'){  // --------------------------------------- CLIENT - CLIENT - CLIENT -------------
-    // Test if checkboxes exist. If YES, remove them. Client(expires)
+    // Test if checkboxes exist. If YES, remove them.
     if (testCheckBox()){
       if (alertLoseCheckboxes() == "YES"){
         sheet.deleteColumns(1,2);
@@ -108,11 +107,11 @@ function formatComplianceReport(expires, type){
 
     startFormat();
     var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
-    var hiddenColumns = [sheet.getRange(1,7),sheet.getRange(1,8)]; // Where does this get called?
+    var hiddenColumns = [sheet.getRange(1,7),sheet.getRange(1,8)]; // Columns that could be hidden in other format
     Logger.log('Formatting range: ' + range.getA1Notation());
 
     if (expires) { 
-      sortOrder = [8,7,5,1]; // ToDo: Add sort order columns
+      sortOrder = [8,7,{column: 5, ascending: false},1];
       formulaArray.push("=AND($F2,$H2=FALSE)");
       formulaArray.push("=AND($G2<TODAY()+31,$H2)");
       formulaArray.push("=$H2");
@@ -124,8 +123,9 @@ function formatComplianceReport(expires, type){
       for (i=0;i<hiddenColumns.length;i++){
         sheet.unhideColumn(hiddenColumns[i]);
       }
+      resetKey = 'orange';
     } else {
-      sortOrder = [5,4,1]; // ToDo: Add sort order columns
+      sortOrder = [6,5,4,1];
       sheet.hideColumns(7,2);
       // Format Green for "Complete = TRUE" && RED for "Complete = FALSE" && Yellow for "has compliance date"
       formulaArray.push("=NOT(ISBLANK($G2))");
@@ -134,7 +134,9 @@ function formatComplianceReport(expires, type){
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[0]).setBackground("yellow").setRanges([range]).build());
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[1]).setBackground("#4adb8c").setRanges([range]).build());
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
+      resetKey = 'yellow';
     }
+    sheet.hideColumns(2,2);
 
   } else if (type == 'RM'){  // --------------------------------------- RM - RM - RM - RM - RM -------------
     
@@ -163,18 +165,20 @@ function formatComplianceReport(expires, type){
 
     if (expires){
       // Format for expiring certs (w/ checkboxes)
-      sortOrder = [{column: 2, ascending: false},8,6,7,5,1];
+      sortOrder = [1,{column: 2, ascending: false},8,6,7,5,1];
       b2Formula = '=OR(AND(INDIRECT("H"&ROW()),ISBLANK(INDIRECT("I"&ROW()))),AND(INDIRECT("H"&ROW()),NOT(INDIRECT("J"&ROW()))),AND(INDIRECT("I"&ROW())<TODAY()+31,INDIRECT("J"&ROW())))';
       formulaArray.push('=OR(AND($H2,ISBLANK($I2)),AND($H2,NOT($J2)))');
       formulaArray.push('=AND($I2<TODAY()+31,$J2)');
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[3]).setBackground("orange").setRanges([range]).build());
+      resetKey = 'red and orange';
     } else {
-      // Format for 0yr certs (w/ checkboxes)
-      // sortOrder = [{column: 2, ascending: false},3]; // ToDo: Add sort order columns
+      // Format for non-expiring certs (w/ checkboxes)
+      sortOrder = [1,{column: 2, ascending: false},9,3];
       b2Formula = '=NOT(ISBLANK(INDIRECT("I"&ROW())))';
       formulaArray.push('=NOT(ISBLANK($I2))');
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
+      resetKey = 'red and yellow';
     }
 
     for (i=0;i<hiddenColumns.length;i++){
@@ -189,6 +193,7 @@ function formatComplianceReport(expires, type){
     }
     b1.setFormula(b1Formula); // sets B1 formula
     sheet.hideColumn(b1);
+    sheet.hideColumns(4,2);
 
   } else if (type == 'hybrid'){   // -------------------------------------- HYBRID - HYBRID - HYBRID - HYBRID ---------------
     // Does the sheet have checkboxes? If NO, then add them.
@@ -206,11 +211,10 @@ function formatComplianceReport(expires, type){
     var a1Formula = '=B1-COUNTIF(A2:A,TRUE) + (COUNTIF(FILTER(A2:A,B2:B=FALSE,A2:A=TRUE),TRUE)*2) & "/" & B1 + COUNTIF(FILTER(A2:A,B2:B=FALSE,A2:A=TRUE),TRUE)';
     var b1Formula = '=COUNTIF(B2:B,TRUE)';
     var b2Formula;
-    var highlight;
     sheet.getRange("A1").setFormula(a1Formula); // sets A1 formula
 
     if (expires){
-      sortOrder = [3];  // ToDo: Add sort order columns
+      sortOrder = [{column: 2, ascending: false},10,9];
       b2Formula = '=OR(AND(INDIRECT("H"&ROW()),ISBLANK(INDIRECT("I"&ROW()))),AND(INDIRECT("H"&ROW()),NOT(INDIRECT("J"&ROW()))),AND(INDIRECT("I"&ROW())<TODAY()+31,INDIRECT("J"&ROW())))';
       formulaArray.push('=$A2'); // call from RM
       formulaArray.push('=OR(AND($H2,ISBLANK($I2)),AND($H2,NOT($J2)))'); // call from RM
@@ -225,9 +229,9 @@ function formatComplianceReport(expires, type){
       for (i=0;i<hiddenColumns.length;i++){
         sheet.unhideColumn(hiddenColumns[i]);
       }
-      highlight = 'yellow and orange';
+      resetKey = 'yellow and orange';
     } else {
-      sortOrder = [3];  // ToDo: Add sort order columns
+      sortOrder = [{column: 2, ascending: false},8,{column: 7, ascending: false}];
       b2Formula = '=NOT(ISBLANK(INDIRECT("I"&ROW())))';
       formulaArray.push('=$A2'); // call from RM
       formulaArray.push('=OR(NOT(ISBLANK($I2)),AND(NOT($H2),$G2=100))'); // call from RM red & yellow
@@ -240,12 +244,10 @@ function formatComplianceReport(expires, type){
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[3]).setBackground("#4adb8c").setRanges([range]).build());
       rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[4]).setBackground("red").setRanges([range]).build());
       sheet.hideColumns(9,2);
-      highlight = 'yellow and possibly orange'; // ToDo: confirm orange needs resetting
+      resetKey = 'yellow and possibly orange';
     }
 
-    // Splash message alerting RM which items to reset  - ToDo: create alert in Messages.gs
-    ui.alert('RMs will need to check those employees highligted in ' + highlight + '.',ui.ButtonSet.OK);
-    
+  
     for (i=0;i<hiddenColumns.length;i++){
       sheet.unhideColumn(hiddenColumns[i]);
     }
@@ -267,6 +269,8 @@ function formatComplianceReport(expires, type){
 
   cleanUp();
   sortReport(range,sortOrder);
+  // Splash message alerting RM which items to reset
+  alertResetKey(resetKey);
   return true;
 }
 
