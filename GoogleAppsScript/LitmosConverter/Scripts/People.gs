@@ -1,4 +1,5 @@
 function convertPeopleReport() {
+  Logger.log('Starting to run %s','convertPeopleReport');
   sheet = ss.getActiveSheet();
   if (alertConfirmConversion('People') == "YES"){
     var wasDeleted = delColumnsPeople();
@@ -13,6 +14,7 @@ function convertPeopleReport() {
 }
 
 function delColumnsPeople() {
+  Logger.log('Starting to run %s','delColumnsPeople');
   sheet = ss.getActiveSheet();
   checkCols();
 
@@ -45,6 +47,7 @@ function delColumnsPeople() {
 }
 
 function formatPeopleReport(){
+  Logger.log('Starting to run %s','formatPeopleReport');
   sheet = ss.getActiveSheet();
   checkCols();
   var formulaArray = [];
@@ -75,7 +78,7 @@ function formatPeopleReport(){
     for (i=0;i<rules.length;i++){
       addConditionalFormatRule(sheet,rules[i]);
     }
-    var sortOrder = [{column: 10, ascending: false},1]; // ToDo: Confirm sort order
+    var sortOrder = [{column: 9, ascending: false},{column: 10, ascending: false},16,1];
     cleanUp();
     sortReport(range,sortOrder);
     return true;
@@ -87,6 +90,7 @@ function formatPeopleReport(){
 
 // --- FUNCTIONS TO CONVERT FOR BULK-UPLOAD CORRECTIONS ---
 function convertPeopleForBulkUpload(){
+  Logger.log('Starting to run %s','convertPeopleForBulkUpload');
   sheet = ss.getActiveSheet();
   checkCols();
   //ToDo: Check for position of lastCol and suggest report type to format from
@@ -131,6 +135,7 @@ function convertPeopleForBulkUpload(){
 }
 
 function correctEmails(col){
+  Logger.log('Starting to run %s','correctEmails');
   checkRows();
   var textOrg = sheet.getRange(2,col,maxRow-1).getValues();
   for (i=0;i<textOrg.length;i++){
@@ -146,6 +151,7 @@ function correctEmails(col){
 }
 
 function titleCase(col) {
+  Logger.log('Starting to run %s','titleCase');
   checkRows();
   var textOrg = sheet.getRange(2,col,maxRow-1).getValues();
   for (i=0;i<textOrg.length;i++){
@@ -159,6 +165,7 @@ function titleCase(col) {
 //-------------------------------------------
 
 function formatForUpload() {
+  Logger.log('Starting to run %s','formatForUpload');
   sheet = ss.getActiveSheet();
   checkCols();
   var sortOrder = null; // ToDo: add sorting order
@@ -192,7 +199,3 @@ function lowerCase(col) {
  }
   sheet.getRange(2,col,maxRow-1).setValues(textOrg);
 }
-
-
-// var pattern1 = val.toLowerCase().replace(/\b[a-z]/ig, function(match) {return match.toUpperCase()});
-
