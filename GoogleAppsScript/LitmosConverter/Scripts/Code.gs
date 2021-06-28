@@ -1,3 +1,4 @@
+var devEmail = 'amartin@enquiron.com, codingMartinPro@gmail.com'
 var ui = SpreadsheetApp.getUi();
 var ss = SpreadsheetApp.getActiveSpreadsheet();
 var sheet = ss.getActiveSheet();
@@ -11,19 +12,11 @@ var twoYearStates = 'CA & DE';
 var oneYearStates = 'NY';
 var tenYearStates = 'CT';
 var zeroYearStates = 'ME & Fed';
+var resetKey;
 
 // ToDo: Call 'ss' in "Major" functions and pass into "Minor" functions -OR- if 'ss' isn't passed to them, then getSS() - e.g.  formatTeamReport(ss)
 
 function onOpen() {
-  // var report1 = 'Course Report';
-  // var report2 = 'Compliance Report';
-  // var report3 = 'Team Report';
-  // var report4 = 'People Report';
-  // var report5 = 'Learning Path Report';
-  // var report6 = 'Module Reports';
-  // var report7 = 'Assessment Report';
-  // var report8 = 'Achievements Report';
-
   var course1 = '2-YR Certs (CA, DE)';
   var course2 = '1-YR Certs (NY)';
   var course3 = 'Indefinite (ME, Fed)';
@@ -66,7 +59,7 @@ function onOpen() {
       .addSubMenu(ui.createMenu('People Reports')
         .addItem('Convert People','convertPeopleReport')
         .addSeparator()
-        .addItem('Bulk Corrections', 'convertPeopleForBulkUpload')
+        .addItem('Bulk Corrections', 'convertPeopleForBulkUpload') // Still working on functionality
       )
       .addSubMenu(ui.createMenu('Learning Path Report')
         .addItem('Convert Learning Path','convertLearningPathsReport')
@@ -93,7 +86,7 @@ function onOpen() {
       .addSeparator()
       .addItem('People -> Bulk Corrections','convertPeopleForBulkUpload')
     )
-    .addSubMenu(ui.createMenu('Format Reports')  // ToDo: Properly link scripts
+    .addSubMenu(ui.createMenu('Format Reports')
       .addSubMenu(ui.createMenu('Course Report')
           .addItem(course1, 'format2yr')
           .addItem(course2,'format1yr')
@@ -131,8 +124,9 @@ function onOpen() {
     .addSubMenu(ui.createMenu('Help')
       .addItem('RM Color Key','displayKey')
       .addItem('Contact Developer','emailDev')
+      .addSeparator()
       .addSubMenu(ui.createMenu('Dev Tools')
-        .addItem('Check Values','displayValues') // Add proper command
+        .addItem('Check Values','displayValues')
       )
     )
   .addToUi();
@@ -202,9 +196,6 @@ function addCheckBoxes(a1Formula){
   // ToDo: get current formatting rules and add checkbox rule to position [0]
 }
 
-
-
-
 function delCols(){
   // Delete empty columns at end of sheet
   // ToDo: Change function to 'delEmptySpace()' and add delRows(); -OR- create new script to call both
@@ -220,13 +211,13 @@ function addConditionalFormatRule(sheet, rule){
   rules = sheet.getConditionalFormatRules();
   rules.push(rule);
   sheet.setConditionalFormatRules(rules);
-  Logger.log('Set %s as format',rule);  // doesn't provide good data
+  Logger.log('Set %s as format',rule);  // doesn't provide good data, can be removed  ToDo: Return the number of rules applied
 }
 
 function clearSheet(){
   sheet = ss.getActiveSheet();
-  var response = ui.alert('⚠️ Are you SURE you want to DELETE EVERYTHING?!',ui.ButtonSet.YES_NO);  // Move message to Messages.gs ???
-    if (response == ui.Button.YES){
+  var response = alertClearSheet();
+    if (response == "YES"){
       var maxC = sheet.getMaxColumns();
       var maxR = sheet.getMaxRows();
       sheet.getRange(1,1,maxR,maxC).clear();
@@ -234,8 +225,8 @@ function clearSheet(){
 }
 
 function resetTemplate(){
-  var response = ui.alert('⚠️ Are you SURE you want to DELETE EVERYTHING?!\n\nMake sure to save a copy of the last project you were working on!!!',ui.ButtonSet.YES_NO); // Move message to Messages.gs ???
-  if (response == ui.Button.YES){
+  var response = alertNewProject();
+  if (response == "YES"){
     ss.insertSheet(0);
     var sheets = ss.getSheets();
     for (i=1;i<sheets.length;i++){
@@ -245,8 +236,17 @@ function resetTemplate(){
 }
 
 function emailDev(){
-  // ToDo: Add script to compose email and send to amartinenquiron@gmail.com
-  functionTBD();
+  var response = promptBugReport();
+  if (response[0] == 'OK'){
+    var emailAddress = devEmail;
+    var message = response[1];
+    var subject = 'Issue with Litmos Report Converter';
+    MailApp.sendEmail(emailAddress, subject, message);
+    Logger.log('Email sent to "%s" with the message "%s"',emailAddress,message);
+    ss.toast('Email successfully sent to ' + devEmail);
+  } else {
+    ss.toast(msgCancelledOperation);
+  }
 }
 
 function cleanUp(){
@@ -306,8 +306,8 @@ function sortReport(range,sortOrder){
     var range = sheet.getRange(sheet.getRange(2,1,lastRow-1,lastCol).getA1Notation());
   }
   if (sortOrder == null) {
-    // ToDo: add msg/alert that there is no sort order
     alertSortFailed();
+    ss.toast(msgCancelledOperation);
     return;
   }
   range.sort(sortOrder);
