@@ -81,9 +81,10 @@ function formatTeamReport() {
     for (i=0;i<rules.length;i++){
       addConditionalFormatRule(sheet,rules[i]);
     }
-    var sortOrder = [];  // ToDo: Add sort order
+    var sortOrder = [{column: 13, ascending: false},11,10];
     cleanUp();
     sortReport(range,sortOrder);
     return true;
   }
 }
+
