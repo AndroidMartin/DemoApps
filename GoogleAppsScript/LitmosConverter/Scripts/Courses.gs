@@ -120,6 +120,7 @@ function formatCourseReport(exp){
       rulesX.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[3]).setBackground("orange").setRanges([range]).build());
     }
     rules.push(SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(formulaArray[2]).setBackground("red").setRanges([range]).build());
+    resetKey = 'red and orange';
     
     if (rulesX.length>0){
       for (i=0;i<rulesX.length;i++){
@@ -132,11 +133,11 @@ function formatCourseReport(exp){
 
     sortReport(range,sortOrder);
     cleanUp();
+    alertResetKey(resetKey);
   } else {
     alertColumnMisMatch('17, 18, or 35',lastCol,'formatCourseReport');
   }
 }
-
 
 
 // Functions to be called in menu options
