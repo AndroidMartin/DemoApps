@@ -1,1 +1,1 @@
-These are the individual script files that should be loaded into Google Sheets.
+These are the individual script files that should be loaded into Google Sheets.  It's recomended to add each file individually, but it will still work if you paste the contents of each individual file into one.
