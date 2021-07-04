@@ -1,1 +1,0 @@
-Here are example applications I wrote while doing exercises to teach myself the language(s).  Some are more complex than others and I will include a sepereate README file for each project to better describe how each work and what, specifically, I was learning.
