@@ -2,12 +2,12 @@ var materialsSheetName = 'Materials';
 var materialEntryForm = 'Entry Form - Materials';
 
 function buttonClearMaterials(){
-  var sheetInfo = sheetVariables('MATERIALS');
+  var sheetInfo = sheetVariables('MATERIALS'); // ToDo: pass sheet name instead of type
   clearForm(true,sheetInfo);
 }
 
 function buttonAddMaterial() {
-  var sheetInfo = sheetVariables('MATERIALS');
+  var sheetInfo = sheetVariables('MATERIALS'); // ToDo: call active ranges by sheet names above, given type passed
   addListItem('MATERIALS',sheetInfo);
   //ToDo: Add Data Validation to each row as you add it
 }
@@ -36,8 +36,6 @@ function onSelectionChange(e) {
 
 function submitMaterials(){
   ui = SpreadsheetApp.getUi();
-  ss = SpreadsheetApp.getActiveSpreadsheet();
-  sheet = SpreadsheetApp.getActiveSheet();
 
   var response = ui.alert("Are you sure you're ready to submit this order?",ui.ButtonSet.YES_NO);
   if (!(response == 'YES')){
@@ -45,75 +43,86 @@ function submitMaterials(){
     return;
   }
 
+// BEGIN RUNNING SCRIPT
   var sheetInfo = sheetVariables('MATERIALS');
-  var r = sheetInfo[1].getRow();
-  var c = sheetInfo[1].getColumn();
-  var numR = sheetInfo[0].getValue();
-  var numC = sheetInfo[2];
-  var supplier = sheetInfo[8];
 
-  // var shipping = sheetInfo[10] / numR; //ToDo: use total number of items
-  var currency = sheetInfo[11];
-  var purchaseDate = sheetInfo[9]; //ToDO: Use this variable
+  // Get data entered into form
+  var totalData = ss.getSheetByName(materialEntryForm).getRange(sheetInfo.listStartCell.getRow(),sheetInfo.listStartCell.getColumn(),sheetInfo.numberOfItems,sheetInfo.listNumCol).getValues();
+  Logger.log('Total Data: ' + totalData);
 
-  var itemQty = 0;
-  for (i=0;i<numR;i++) {
-    itemQty = itemQty + sheet.getRange(r+i,5).getValue();
-    Logger.log('itemQty: %s',itemQty);
+  // Get destination data
+  var writeSheet = ss.getSheetByName(materialsSheetName);
+  var writeHeaders = writeSheet.getRange(1,1,1,writeSheet.getLastColumn()).getValues();
+  writeHeaders = writeHeaders[0];
+  var writeRow = writeSheet.getLastRow()+1;
+  var writeRange = writeSheet.getRange(writeRow,1,sheetInfo.numberOfItems,19);
+  var writeData = writeRange.getValues();
+
+  for (i=0;i<sheetInfo.numberOfItems;i++) {
+    // Create entry values as an object
+    var item = {
+      picture : totalData[i][0],
+      cost : totalData[i][1],
+      quantity : totalData[i][2],
+      manufacturer : totalData[i][3],
+      type : totalData[i][4],
+      material : totalData[i][6],
+      color : totalData[i][7],
+      size : totalData[i][8],
+      shape : totalData[i][9],
+    }
+    Logger.log('Item Data: %s',item);
+
+    // Assign values to write array
+    writeData[i][writeHeaders.indexOf('ID')] = writeRow+i;
+    writeData[i][writeHeaders.indexOf('Picture')] = item.picture;
+    writeData[i][writeHeaders.indexOf('Item')] = item.type;
+    writeData[i][writeHeaders.indexOf('Material')] = item.material;
+    writeData[i][writeHeaders.indexOf('Color')] = item.color;
+    writeData[i][writeHeaders.indexOf('Size')] = item.size;
+    writeData[i][writeHeaders.indexOf('Shape')] = item.shape;
+    writeData[i][writeHeaders.indexOf('Qty')] = item.quantity;
+    writeData[i][writeHeaders.indexOf('Cost')] = item.cost;
+    writeData[i][writeHeaders.indexOf('Shipping')] = sheetInfo.shippingTotal; // ToDo: Figure how you want to calculate shipping
+    writeData[i][writeHeaders.indexOf('Supplier')] = sheetInfo.supplier;
+    writeData[i][writeHeaders.indexOf('Manufacturer')] = item.manufacturer;
+    writeData[i][writeHeaders.indexOf('Currency')] = sheetInfo.currency;
+    writeData[i][writeHeaders.indexOf('Date Recieved')] = sheetInfo.datePurchased;
+    // [ID, Picture, Desc, Item, Material, Color, Size, Shape, Qty, Cost, Shipping, Supplier, Manufacturer, Cost/Unit, Currency, Ship/Unit, Cost w/ Ship, Conv Rate, Date Recieved]
+    //  0     1       2     3       4       5      6      7     8     9      10        11          12          13         14         15           16          17          18  (ArrayLocations)
+    //  1     2       3     4       5       6      7      8     9    10      11        12          13          14         15         16           17          18          19  (ColumnNumbers)
   }
-  var shipping = sheetInfo[10] / itemQty;
-  var v;
-  var v2;
-  var v3;
-  var image;
-  var qtys;
 
-  for (i=0;i<numR;i++) {
-    //ToDo: rename variables to make better sense
-    v = sheet.getRange(r+i,c,1,numC).getValues();
-    v[0].splice(5,1); // removes empty value in H
-    v2 = v[0].splice(0,4);
-    v3 = [v2.splice(-1,1)];
-    v3[0].unshift(supplier);
-    image = [v2.splice(0,1)];
-    // var v4 = [v2.splice(-1,2)];
-    qtys = v2[1];
-    v2 = [[v2[1],v2[0]]];
+  // Write Values to Sheet
+  writeRange.setValues(writeData);
 
-    // WRITE TO MATERIALS    
-    var writeSheet = ss.getSheetByName('Materials'); // TODO: Change name to "Materials" and move to better place
-    var writeRow = writeSheet.getLastRow() + 1;
-    var desc = '=D' + writeRow + '&", "&F' + writeRow + '&", "&E' + writeRow + '&", "&G' + writeRow + '&", "&H' + writeRow;
-    Logger.log('write: %s; v: %s; v3: %s, v4: %s, v2: %s,', writeRow,v,v3,image,v2);
-    
-    // ToDo: Get columns dynamicly
-    writeSheet.getRange(writeRow,15,1,1).setValue(currency);
-    writeSheet.getRange(writeRow,11,1,1).setValue(shipping*qtys);
-    writeSheet.getRange(writeRow,9,1,2).setValues(v2);
-    writeSheet.getRange(writeRow,12,1,2).setValues(v3);
-    writeSheet.getRange(writeRow,4,1,5).setValues(v);
-    writeSheet.getRange(writeRow,2,1,1).setValues(image);
-    // Set sheet formulas
-    writeSheet.getRange(writeRow,3,1,1).setFormula(desc);
-    var cr2 = writeSheet.getRange(writeRow+1,18,1,1).getValue();
-    writeSheet.getRange(writeRow,18,1,1).setValue(cr2);
-    writeSheet.getRange(writeRow,19).setValue(purchaseDate);
+  // Handle Formulas
+  var desc;
+  var costPerUnit;
+  var shippingPerUnit;
+  var costWithShipping;
 
-    var nFormula = '=J' + writeRow + '/I' + writeRow;
-    var pFormula = '=K' + writeRow + '/I' + writeRow;
-    var qFormula = '=N' + writeRow + '+P' + writeRow;
-    // var conRate = '=IFS(O'+writeRow+'="Pesos",GOOGLEFINANCE("CURRENCY:MXNUSD"),O'+writeRow+'="Dollars",1)';
-    var conRate = 'GOOGLEFINANCE("CURRENCY:MXNUSD")';
+  // Set conversion rate at time of entry
+  var conRange = writeSheet.getRange(writeRow,18);
+  var conFormula = 'GOOGLEFINANCE("CURRENCY:MXNUSD")';
+  conRange.setFormula(conFormula);
+  var conRate = conRange.getValue();
 
-    writeSheet.getRange(writeRow,14).setFormula(nFormula);
-    writeSheet.getRange(writeRow,16).setFormula(pFormula);
-    writeSheet.getRange(writeRow,17).setFormula(qFormula);
-    writeSheet.getRange(writeRow,18).setFormula(conRate);
-    // writeSheet.getRange(writeRow,18).setValue(writeSheet.getRange(writeRow,18).getValue());
+  for (i=0;i<sheetInfo.numberOfItems;i++) {
+    // Set Formulas - NEEDS UPDATING IF COLUMN STRUCTURE CHANGES
+    writeRow = writeRow + i;
+    desc = '=D' + writeRow + '&", "&F' + writeRow + '&", "&E' + writeRow + '&", "&G' + writeRow + '&", "&H' + writeRow;
+    conFormula = '=IFS(O'+writeRow+'="Pesos",'+conRate+',O'+writeRow+'="Dollars",1)'
+    costPerUnit = '=J' + writeRow + '/I' + writeRow;
+    shippingPerUnit = '=K' + writeRow + '/I' + writeRow;
+    costWithShipping = '=N' + writeRow + '+P' + writeRow;
 
-    var cRateVal = writeSheet.getRange(writeRow,18).getValue();
-    conRate = '=IFS(O'+writeRow+'="Pesos",'+cRateVal+',O'+writeRow+'="Dollars",1)'
-    writeSheet.getRange(writeRow,18).setFormula(conRate);
+    // Write Formulas
+    writeSheet.getRange(writeRow,writeHeaders.indexOf('Description')).setFormula(desc);
+    writeSheet.getRange(writeRow,writeHeaders.indexOf('Cost/Unit')).setFormula(costPerUnit);
+    writeSheet.getRange(writeRow,writeHeaders.indexOf('Ship/Unit')).setFormula(shippingPerUnit);
+    writeSheet.getRange(writeRow,writeHeaders.indexOf('Cost w/ Ship')).setFormula(costWithShipping);
+    writeSheet.getRange(writeRow,writeHeaders.indexOf('Conv Rate')).setFormula(conFormula);
   }
 
   clearForm(false,sheetInfo);
