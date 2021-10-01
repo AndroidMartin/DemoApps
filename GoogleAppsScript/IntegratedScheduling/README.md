@@ -8,5 +8,5 @@ The "Print" tab is what I would use to post within the kitchen for anyone to see
 
 Knowing what I do now, I would rebuild this sheet slightly differently, but I thought it prudent to show where I started...
 
-You can access the spreadsheet by using this URL: https://docs.google.com/spreadsheets/d/1fDvPFUFkLljYswoZU3_RjYe4wpzLJhPfU6S2h8R7TK0/edit#gid=1028450667
+You can access the spreadsheet by using this URL: https://docs.google.com/spreadsheets/d/1fDvPFUFkLljYswoZU3_RjYe4wpzLJhPfU6S2h8R7TK0/edit?usp=sharing
 Be sure to save a copy for yourself before utilizing any of the functions.  
